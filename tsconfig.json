@@ -1,7 +1,24 @@
 {
+<<<<<<< HEAD
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ]
+=======
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",                // ✅ must match moduleResolution
+    "moduleResolution": "NodeNext",      // ✅ consistent with ESM
+    "outDir": "dist",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+>>>>>>> 2fc23ee7bb82c5cd51d79965eedd26fac97150fb
 }
