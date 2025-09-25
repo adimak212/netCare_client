@@ -5,6 +5,7 @@ type CanvasComponentProps = {
     canvasComponents: (ComponentType)[];
     setCanvasComponents: React.Dispatch<React.SetStateAction<(ComponentType)[]>>;
 }
+
 export default function Canvas({canvasComponents , setCanvasComponents}: CanvasComponentProps) {
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -19,7 +20,7 @@ export default function Canvas({canvasComponents , setCanvasComponents}: CanvasC
   };
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); // חובה כדי לאפשר Drop
+    e.preventDefault(); 
   };
     return(
         <div
@@ -42,7 +43,7 @@ export default function Canvas({canvasComponents , setCanvasComponents}: CanvasC
                 padding: "5px",
                 }}
             >
-                {comp.label} #{comp.instanceId}
+                {comp.label} #{comp.instanceId} --{comp.id}
             </div>
             ))}
         </div>
