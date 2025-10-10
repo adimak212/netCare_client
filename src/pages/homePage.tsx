@@ -11,10 +11,10 @@ import axios from 'axios';
     };
   
   const componentsLibrary: ComponentType[] = [
-    { id: "router", label: "Router", onDragStart,  instanceId: null , node_type: "dynamips", x: 100, y: 100},
-    { id: "switch", label: "Switch", onDragStart, instanceId: null , node_type: "ethernet_switch" , x: 200, y: 100},
-    { id: "pc", label: "PC", onDragStart, instanceId: null , node_type: "vpcs" , x: 300, y: 100},
-    { id: "cloud", label: "cloud", onDragStart, instanceId: null , node_type: "cloud" , x: 400, y: 100},
+    { id: "router", label: "Router", onDragStart,  instanceId: null },
+    { id: "switch", label: "Switch", onDragStart, instanceId: null },
+    { id: "pc", label: "PC", onDragStart, instanceId: null },
+    { id: "cloud", label: "cloud", onDragStart, instanceId: null },
   ];
   
   
