@@ -24,16 +24,18 @@ export default function Canvas({canvasComponents , setCanvasComponents}: CanvasC
   };
     return(
         <div
-            style={{
-            flex: 1,
-            border: "2px dashed gray",
-            minHeight: "400px",
-            padding: "10px",
+           style={{
+              display: "flex",
+              flexDirection: "column",
+              border: "2px dashed gray",
+              height: "80vh",
+              width: "50vw",          
+              margin: "0.5rem",
+              overflow: "auto",      
             }}
             onDrop={onDrop}
             onDragOver={onDragOver}
         >
-            <h3>Canvas</h3>
             {canvasComponents.map((comp) => (
             <div
                 key={comp.instanceId}

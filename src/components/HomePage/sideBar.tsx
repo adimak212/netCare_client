@@ -9,7 +9,7 @@ type SideBarProps = {
 
 export function SideBar({ componentsLibrary }: SideBarProps) {
     return (
-    <div style={{ display: "flex", gap: "20px" }}>
+    <div style={{ display: "flex", gap: "20px" , height: "80vh"}}>
       {/* ספריית רכיבים */}
       <div
         style={{

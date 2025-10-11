@@ -20,20 +20,44 @@ import axios from 'axios';
   
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<ComponentType[]>([]);
-
+  const [ProjectName, setProjectName] = useState<string>("");
 
   async function SendComponnents() {
-    const response = await axios.post("http://localhost:3000/createProject" , {canvasComponents});
+    const response = await axios.post("http://localhost:3000/createProject" , {canvasComponents , ProjectName});
     console.log(response.data);
+    console.log(ProjectName);
   }
 
   return (
-    <div>
-       <SideBar componentsLibrary={componentsLibrary}/>
-       <Canvas canvasComponents={canvasComponents} setCanvasComponents={setCanvasComponents}/>
-       <button onClick={SendComponnents}>send components</button>
+    <div style={styles.container}>
+      <div>
+        <SideBar componentsLibrary={componentsLibrary}/>
+      </div>
+      <div style={styles.CanvasConteiner}>
+        <span>Enter Project Name </span>
+        <input type="text" value = {ProjectName} onChange={(event) => setProjectName(event.target.value)}/>
+        <Canvas canvasComponents={canvasComponents} setCanvasComponents={setCanvasComponents}/>
+        <button onClick={SendComponnents}>Create Project</button>
+      </div>
+      <div style={{width: '11vw'}}></div>
     </div>
   )
 }
 
 export default homePage
+
+
+const styles = {
+  CanvasConteiner: {
+    display: 'flex',
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    flexDirection: 'column' as 'column', 
+  },
+  container : {
+    display: 'flex',
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    width: '100vw',
+  }
+}
