@@ -1,34 +1,54 @@
-
-
 import DraggableItem from "./DraggableItem";
 import type { ComponentType } from "../../types/types";
+import pcIcon from "../../assets/icons/pc.png";
+import switchIcon from "../../assets/icons/switch.png";
+import routerIcon from "../../assets/icons/router.png";
+import cloudIcon from "../../assets/icons/cloud.png";
 
-type SideBarProps = {
-    componentsLibrary: ComponentType[];
+const onDragStart = (
+  e: React.DragEvent<HTMLDivElement>,
+  component: ComponentType
+) => {
+  e.dataTransfer.setData("component", JSON.stringify(component));
 };
 
-export function SideBar({ componentsLibrary }: SideBarProps) {
-    return (
-    <div style={{ display: "flex", gap: "20px" , height: "80vh"}}>
-      {/* ספריית רכיבים */}
-      <div
-        style={{
-          width: "150px",
-          border: "1px solid black",
-          padding: "10px",
-        }}
-      >
-        <h3>Library</h3>
-        {componentsLibrary.map((comp) => (
-            <DraggableItem
-              key={comp.id}
-              id={comp.id}
-              label={comp.label}
-              onDragStart={comp.onDragStart}
-              instanceId={null}
-            />
-        ))}
-      </div>
-    </div>  
-    );
+const items: ComponentType[] = [
+  {
+    id: "pc",
+    label: "PC",
+    icon: pcIcon,
+    onDragStart,
+    instanceId: null,
+  },
+  {
+    id: "switch",
+    label: "Switch",
+    icon: switchIcon,
+    onDragStart,
+    instanceId: null,
+  },
+  {
+    id: "router",
+    label: "Router",
+    icon: routerIcon,
+    onDragStart,
+    instanceId: null,
+  },
+  {
+    id: "cloud",
+    label: "Cloud",
+    icon: cloudIcon,
+    onDragStart,
+    instanceId: null,
+  },
+];
+
+export function SideBar() {
+  return (
+    <div className="flex flex-col gap-2 mt-4">
+      {items.map((comp) => (
+        <DraggableItem {...comp} />
+      ))}
+    </div>
+  );
 }
