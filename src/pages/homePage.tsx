@@ -3,9 +3,10 @@ import Canvas from "../components/HomePage/canvas";
 import type { ComponentType } from "../types/types";
 import { SideBar } from "../components/HomePage/sideBar";
 import axios from "axios";
+import type { Device } from "../classes/Device";
 
 function homePage() {
-  const [canvasComponents, setCanvasComponents] = useState<ComponentType[]>([]);
+  const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
   const [ProjectName, setProjectName] = useState<string>("");
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -64,7 +65,9 @@ function homePage() {
           isConnecting={isConnecting}
           setIsConnecting={setIsConnecting}
         />
-        <button className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold">Create GNS3 Project</button>
+        <button className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold">
+          Create GNS3 Project
+        </button>
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import type { Device } from "../classes/Device";
+
 export type ComponentType = {
   id: string;
   label: string;
@@ -13,8 +15,8 @@ export type ComponentType = {
 
 // סוג הפרופס של הקומפוננטה Canvas
 export interface CanvasComponentProps {
-  canvasComponents: ComponentType[];
-  setCanvasComponents: React.Dispatch<React.SetStateAction<ComponentType[]>>;
+  canvasComponents: Device[];
+  setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>;
   isConnecting: boolean;
   setIsConnecting: React.Dispatch<React.SetStateAction<boolean>>;
 }
