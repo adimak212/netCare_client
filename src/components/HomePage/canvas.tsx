@@ -16,10 +16,10 @@ const ModelToPorts: Record<string, string[]> = {
 export default function Canvas({
   canvasComponents,
   setCanvasComponents,
+  isConnecting,
+  setIsConnecting,
 }: CanvasComponentProps) {
-  const [connections, setConnections] = useState([]);
   const [selectedComponnent, setSelectedComponnent] = useState<number>(0);
-  const [showHint, setShowHint] = useState(true);
   const [editComponnent, setEditComponnent] = useState<number | null>(null);
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -36,9 +36,9 @@ export default function Canvas({
           case "PC":
             return new PC(Date.now(), x, y);
           case "Switch":
-            return new Switch(Date.now(), "3600", x, y, ["f"]);
+            return new Switch(Date.now(), "3600", x, y, ["f", "f", "g", "s"]);
           case "Router":
-            return new Router(Date.now(), "7200", x, y, ["f"]);
+            return new Router(Date.now(), "7200", x, y, ["f", "f", "g", "s"]);
           default:
             return new PC(Date.now(), x, y);
         }
@@ -46,7 +46,6 @@ export default function Canvas({
 
       const classCreated = newClass();
       setCanvasComponents((prev) => [...prev, classCreated]);
-      setShowHint(false);
     }
   };
 
@@ -82,6 +81,23 @@ export default function Canvas({
     setCanvasComponents((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const takePort = (
+    takenPort: number,
+    compIndex: number,
+    connectedTo: { port: string; device: Device; instanceId: number }
+  ) => {
+    setCanvasComponents((prev) =>
+      prev.map((c, i) =>
+        i === compIndex
+          ? {
+              ...c,
+              takenPorts: [...(c.takenPorts || []), { takenPort, connectedTo }],
+            }
+          : c
+      )
+    );
+  };
+
   return (
     <div
       className="w-full h-[600px] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
@@ -92,7 +108,7 @@ export default function Canvas({
         setEditComponnent(null);
       }}
     >
-      {showHint && (
+      {canvasComponents.length === 0 && (
         <div className="flex justify-center items-center flex-col">
           <div>Drag and Drop Components Here</div>
           <div className="opacity-50 text-sm">
@@ -115,8 +131,8 @@ export default function Canvas({
             top: comp.y,
           }}
         >
-          {selectedComponnent === comp.id ? (
-            <div className="absolute top-0 right-[-35px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
+          {!isConnecting && selectedComponnent === comp.id ? (
+            <div className="absolute top-0 right-[-25px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
               <button
                 className="block w-full text-xs text-left hover:bg-blue-600 rounded px-2 py-1"
                 onClick={() => comp.id && setEditComponnent(comp.id)}
@@ -129,6 +145,38 @@ export default function Canvas({
               >
                 Delete
               </button>
+            </div>
+          ) : null}
+          {isConnecting && selectedComponnent === comp.id ? (
+            <div className="absolute top-0 right-[-20px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
+              {comp.ports?.map((port, index) => (
+                <div
+                  className="flex items-center  hover:bg-blue-600 rounded px-2 py-1"
+                  key={index}
+                >
+                  <div
+                    key={index}
+                    className="block w-full text-xs text-left cursor-pointer"
+                    onClick={() =>
+                      takePort(index, canvasComponents.findIndex(c => c.id === comp.id), {
+                        port: port,
+                        device: comp,
+                        instanceId: comp.id!,
+                      })
+                    }
+                  >
+                    {port}
+                    {index}
+                  </div>
+                  <div
+                    className={`w-3 h-2 rounded-full ${
+                      comp.takenPorts?.some((tp) => tp.takenPort === index)
+                        ? "bg-red-500"
+                        : "bg-green-500"
+                    }`}
+                  ></div>
+                </div>
+              ))}
             </div>
           ) : null}
           <img

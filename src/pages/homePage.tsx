@@ -1,17 +1,19 @@
 import { useState } from "react";
 import Canvas from "../components/HomePage/canvas";
-import type { ComponentType } from "../types/types";
 import { SideBar } from "../components/HomePage/sideBar";
 import axios from "axios";
 import type { Device } from "../classes/Device";
+import wireIcon from "../assets/icons/wire.png";
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
   const [ProjectName, setProjectName] = useState<string>("");
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectMassege , setConnectMassege] = useState ("Connect Componnents");
 
   const handaleConnectClick = () => {
     setIsConnecting(!isConnecting);
+    setConnectMassege (isConnecting ? "Connect Componnents" : "Stop Connect"); ;
   };
 
   async function SendComponnents() {
@@ -24,30 +26,18 @@ function homePage() {
   }
 
   return (
-    // <div className='flex '>
-    //   <div>
-    //     <SideBar componentsLibrary={componentsLibrary}/>
-    //     <button onClick={handaleConnectClick}>Connect Componnents</button>
-    //   </div>
-    //   <div className='flex flex-col'>
-    //     <span>Enter Project Name </span>
-    //     <input type="text" value = {ProjectName} onChange={(event) => setProjectName(event.target.value)}/>
-    //     <Canvas
-    //       canvasComponents={canvasComponents}
-    //       setCanvasComponents={setCanvasComponents}
-    //       isConnecting = {isConnecting}
-    //       setIsConnecting={setIsConnecting}
-    //      />
-    //     <button onClick={SendComponnents} className='bg-primary'>Create Project</button>
-    //   </div>
-    //   <div></div>
-    // </div>
-
     <div className="w-[95%] mx-auto flex gap-10">
       <div className="flex gap-6">
-        <div className="flex flex-col relative py-6">
-          <span className="font-bold text-2xl">Components</span>
-          <SideBar />
+        <div>
+          <div className="flex flex-col relative py-6">
+            <span className="font-bold text-2xl">Components</span>
+            <SideBar />
+          </div>
+          <div className="w-full h-[1px] bg-primary bg-opacity-20"></div>
+          <div className= "flex items-center gap-4 bg-bgSex py-4 pr-6 pl-3 rounded-md w-56 mt-4 cursor-pointer" onClick={handaleConnectClick}>
+              <img src={wireIcon} alt="wire_icon" className="w-10 rounded-md bg-primary p-2 bg-opacity-20" />
+              {connectMassege}
+          </div>
         </div>
         <div className="w-[1px] h-screen bg-primary bg-opacity-20"></div>
       </div>

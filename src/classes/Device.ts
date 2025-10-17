@@ -11,7 +11,7 @@ class Device {
   deviceType?: "Switch" | "Router" | "PC";
   ports?: string[];
   takenPorts?: {
-    takenPort: string;
+    takenPort: number;
     connectedTo: { port: string; device: Device; instanceId: number };
   }[];
 }
