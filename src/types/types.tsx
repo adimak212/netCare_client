@@ -19,4 +19,9 @@ export interface CanvasComponentProps {
   setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>;
   isConnecting: boolean;
   setIsConnecting: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
+
+export type Project = {
+  name: string ;
+  project_id : string;
+};

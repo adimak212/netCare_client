@@ -1,5 +1,5 @@
-import DraggableItem from "./DraggableItem";
-import type { ComponentType } from "../../types/types";
+import DraggableItem from "./DraggableItem.js";
+import type { ComponentType } from "../../types/types.js";
 import pcIcon from "../../assets/icons/pc.png";
 import switchIcon from "../../assets/icons/switch.png";
 import routerIcon from "../../assets/icons/router.png";

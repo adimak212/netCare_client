@@ -33,3 +33,7 @@ html {
   font-family: "SpaceGrotesk", sans-serif;
   font-weight: 500;
 }
+
+body{
+  height: 100vh;
+}

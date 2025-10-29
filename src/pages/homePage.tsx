@@ -1,19 +1,19 @@
 import { useState } from "react";
-import Canvas from "../components/HomePage/canvas";
-import { SideBar } from "../components/HomePage/sideBar";
+import Canvas from "../componnents/HomePage/canvas.js";
+import { SideBar } from "../componnents/HomePage/sideBar.js";
 import axios from "axios";
 import type { Device } from "../classes/Device";
-import wireIcon from "../assets/icons/wire.png";
+import WireImg from "../assets/icons/Wire.png"
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
   const [ProjectName, setProjectName] = useState<string>("");
   const [isConnecting, setIsConnecting] = useState(false);
-  const [connectMassege , setConnectMassege] = useState ("Connect Componnents");
+  const [connectMassege, setConnectMassege] = useState("Connect Componnents");
 
   const handaleConnectClick = () => {
     setIsConnecting(!isConnecting);
-    setConnectMassege (isConnecting ? "Connect Componnents" : "Stop Connect"); ;
+    setConnectMassege(isConnecting ? "Connect Componnents" : "Stop Connect");
   };
 
   async function SendComponnents() {
@@ -34,9 +34,16 @@ function homePage() {
             <SideBar />
           </div>
           <div className="w-full h-[1px] bg-primary bg-opacity-20"></div>
-          <div className= "flex items-center gap-4 bg-bgSex py-4 pr-6 pl-3 rounded-md w-56 mt-4 cursor-pointer" onClick={handaleConnectClick}>
-              <img src={wireIcon} alt="wire_icon" className="w-10 rounded-md bg-primary p-2 bg-opacity-20" />
-              {connectMassege}
+          <div
+            className="flex items-center gap-4 bg-bgSex py-4 pr-6 pl-3 rounded-md w-56 mt-4 cursor-pointer"
+            onClick={handaleConnectClick}
+          >
+            <img
+              src={WireImg}
+              alt="wire_icon"
+              className="w-10 rounded-md bg-primary p-2 bg-opacity-20"
+            />
+            {connectMassege}
           </div>
         </div>
         <div className="w-[1px] h-screen bg-primary bg-opacity-20"></div>
@@ -55,7 +62,10 @@ function homePage() {
           isConnecting={isConnecting}
           setIsConnecting={setIsConnecting}
         />
-        <button className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold">
+        <button
+          className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
+          onClick={SendComponnents}
+        >
           Create GNS3 Project
         </button>
       </div>

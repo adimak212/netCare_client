@@ -1,6 +1,7 @@
 import pcIcon from "../assets/icons/pc.png";
 import switchIcon from "../assets/icons/switch.png";
 import routerIcon from "../assets/icons/router.png";
+import cloudIcon from "../assets/icons/cloud.png";
 
 class Device {
   id?: number;
@@ -8,7 +9,7 @@ class Device {
   icon?: string;
   x?: number;
   y?: number;
-  deviceType?: "Switch" | "Router" | "PC";
+  deviceType?: "Switch" | "Router" | "PC" | "Cloud";
   ports?: string[];
   takenPorts?: {
     takenPort: number;
@@ -25,7 +26,7 @@ class PC extends Device {
     this.icon = pcIcon;
     this.id = id;
     this.deviceType = "PC";
-    this.ports = ["serial"];
+    this.ports = ["Ethernet"];
   }
 }
 
@@ -67,4 +68,22 @@ class Router extends Device {
   }
 }
 
-export { Device, PC, Switch, Router };
+class Cloud extends Device {
+  constructor(
+    id: number, 
+    x: number,
+    y: number,
+    ports : string[]
+  ){
+    super();
+    this.x = x;
+    this.y = y;
+    this.id = id;
+    this.ports = ports;
+    this.deviceType = "Cloud"
+    this.modelType = ""
+    this.icon = cloudIcon;
+  }
+}
+
+export { Device, PC, Switch, Router , Cloud };
