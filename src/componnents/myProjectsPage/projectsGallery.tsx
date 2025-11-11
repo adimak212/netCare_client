@@ -3,20 +3,33 @@ import axios from "axios";
 import type { Project } from "../../types/types";
 import Swal from "sweetalert2";
 import ProjectImg from "../../assets/icons/project.png";
+import { useNavigate } from "react-router-dom";
+
 
 function projectGallery() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [toDel, setToDel] = useState(false);
   const [selectedComponnent, setSelectedComponnent] = useState("");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const res = axios
+
+
+
+  useEffect(() =>  {
+    try {
+      const res =  axios
       .get<Project[]>("http://localhost:3000/getAllProjects")
       .then((response) => {
         console.log(response.data);
         setProjects(response.data.sort((a, b) => a.name.localeCompare(b.name)));
       });
+    } catch (error) {
+      console.log("Error" + error);
+    }
+    
   }, []);
+
+  
 
   const deleteProject = async (id: string, name: string) => {
     // בקשת אישור מהמשתמש
@@ -33,7 +46,7 @@ function projectGallery() {
     });
 
     if (result.isConfirmed) {
-      //await axios.get("http://localhost:3000/deleteProject", { params: { id } });
+      await axios.get("http://localhost:3000/deleteProject", { params: { id } });
       setProjects(projects.filter((a) => a.project_id != id));
 
       Swal.fire({
@@ -44,10 +57,10 @@ function projectGallery() {
         color: "#ffffff",
         confirmButtonColor: "#1173d4",
       });
-
-      //setToDel(true);
-      //setSelectedComponnent(id);
     }
+  };
+  const handlePick = async (id: string) => {
+    navigate(`/${id}`); // 👈 סוגר נכון
   };
 
   return (
@@ -55,11 +68,12 @@ function projectGallery() {
       {projects.map((proj) => (
         <div
           key={proj.project_id}
-          className="m-5 bg-bgSex w-40 h-32 rounded-md cursor-pointer "
+          className="m-5 bg-background w-40 h-32 rounded-md cursor-pointer z-[50]"
+          onClick = {() => handlePick(proj.project_id)}
         >
           <button
             onClick={() => deleteProject(proj.project_id, proj.name)}
-            className="ml-3 mt-2 bg-red-500 rounded-md w-[20px] h-[20px] text-sm"
+            className="ml-3 mt-2 bg-red-500 rounded-md w-[20px] h-[20px] text-sm z-[100]"
           >
             x
           </button>

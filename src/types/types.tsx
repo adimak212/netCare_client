@@ -19,9 +19,52 @@ export interface CanvasComponentProps {
   setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>;
   isConnecting: boolean;
   setIsConnecting: React.Dispatch<React.SetStateAction<boolean>>;
-};
+  connections:
+    | {
+        from: {
+          port: string;
+          device: Device;
+          instanceId: number;
+          port_number?: number;
+          index?: number;
+          adapter_number: number;
+        };
+        to: {
+          port: string;
+          device: Device;
+          instanceId: number;
+          port_number?: number;
+          index?: number;
+          adapter_number: number;
+        };
+      }[]
+    | undefined;
+  setConnections: React.Dispatch<
+    React.SetStateAction<
+      | {
+          from: {
+            port: string;
+            device: Device;
+            instanceId: number;
+            port_number?: number;
+            index?: number;
+            adapter_number: number;
+          };
+          to: {
+            port: string;
+            device: Device;
+            instanceId: number;
+            port_number?: number;
+            index?: number;
+            adapter_number: number;
+          };
+        }[]
+      | undefined
+    >
+  >;
+}
 
 export type Project = {
-  name: string ;
-  project_id : string;
+  name: string;
+  project_id: string;
 };

@@ -9,12 +9,20 @@ class Device {
   icon?: string;
   x?: number;
   y?: number;
-  deviceType?: "Switch" | "Router" | "PC" | "Cloud";
-  ports?: string[];
-  takenPorts?: {
-    takenPort: number;
-    connectedTo: { port: string; device: Device; instanceId: number };
+  deviceType?: "ethernet_switch" | "dynamips" | "vpcs" | "cloud";
+  ports?: {
+    link_type: string;
+    port_number: number;
+    short_name: string;
+    adapter_number: number;
   }[];
+  takenPorts?:
+    | {
+        takenPort: number;
+        connectedTo: { port: string; device: Device; instanceId: number };
+      }[]
+    | undefined;
+  name?: string;
 }
 
 class PC extends Device {
@@ -25,8 +33,16 @@ class PC extends Device {
     this.modelType = "";
     this.icon = pcIcon;
     this.id = id;
-    this.deviceType = "PC";
-    this.ports = ["Ethernet"];
+    this.deviceType = "vpcs";
+    this.ports = [
+      {
+        link_type: "ethernet",
+        port_number: 0,
+        short_name: "e0",
+        adapter_number: 0,
+      },
+    ];
+    this.name = "PC";
   }
 }
 
@@ -36,7 +52,12 @@ class Switch extends Device {
     modelType: string,
     x: number,
     y: number,
-    ports?: string[]
+    ports?: {
+      link_type: string;
+      port_number: number;
+      short_name: string;
+      adapter_number: number;
+    }[]
   ) {
     super();
     this.x = x;
@@ -44,8 +65,9 @@ class Switch extends Device {
     this.icon = switchIcon;
     this.id = id;
     this.modelType = modelType;
-    this.deviceType = "Switch";
+    this.deviceType = "ethernet_switch";
     this.ports = ports;
+    this.name = "Switch";
   }
 }
 
@@ -55,7 +77,12 @@ class Router extends Device {
     modelType: string,
     x: number,
     y: number,
-    ports?: string[]
+    ports?: {
+      link_type: string;
+      port_number: number;
+      short_name: string;
+      adapter_number: number;
+    }[]
   ) {
     super();
     this.x = x;
@@ -63,27 +90,31 @@ class Router extends Device {
     this.icon = routerIcon;
     this.id = id;
     this.modelType = modelType;
-    this.deviceType = "Router";
+    this.deviceType = "dynamips";
     this.ports = ports;
+    this.name = "Router";
   }
 }
 
 class Cloud extends Device {
-  constructor(
-    id: number, 
-    x: number,
-    y: number,
-    ports : string[]
-  ){
+  constructor(id: number, x: number, y: number) {
     super();
     this.x = x;
     this.y = y;
     this.id = id;
-    this.ports = ports;
-    this.deviceType = "Cloud"
-    this.modelType = ""
+    this.ports = [
+      {
+        link_type: "ethernet",
+        port_number: 0,
+        short_name: "e0",
+        adapter_number: 0,
+      },
+    ];
+    this.deviceType = "cloud";
+    this.modelType = "";
     this.icon = cloudIcon;
+    this.name = "Cloud";
   }
 }
 
-export { Device, PC, Switch, Router , Cloud };
+export { Device, PC, Switch, Router, Cloud };

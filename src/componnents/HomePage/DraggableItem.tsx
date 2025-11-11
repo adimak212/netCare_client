@@ -13,7 +13,7 @@ export default function DraggableItem({
       onDragStart={(e) =>
         onDragStart(e, { id, label, icon, onDragStart, instanceId: null })
       }
-      className="flex items-center gap-4 bg-bgSex py-4 pr-6 pl-3 rounded-md w-56 z-10"
+      className="flex items-center gap-4 bg-background py-4 pr-6 pl-3 rounded-md w-56 z-10"
     >
       <img
         src={icon}
