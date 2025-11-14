@@ -22,13 +22,11 @@ export default function Canvas({
   setConnections,
   connections,
 }: CanvasComponentProps) {
-  const [selectedComponnent, setSelectedComponnent] = useState<number>(0);
-  const [editComponnent, setEditComponnent] = useState<number | null>(null);
+  const [selectedComponnent, setSelectedComponnent] = useState<string>("");
+  const [editComponnent, setEditComponnent] = useState<string | null>(null);
   const [selectedPort, setSelectedPort] = useState<{
     port: string;
-    device: Device;
-    instanceId: number;
-    index?: number;
+    node_id: string;
     port_number?: number;
     adapter_number: number;
   } | null>(null);
@@ -53,15 +51,27 @@ export default function Canvas({
       const newClass = () => {
         switch (component.label) {
           case "PC":
-            return new PC(Date.now(), x, y);
+            return new PC(new Date().toISOString(), x, y);
           case "Switch":
-            return new Switch(Date.now(), "3600", x, y, ModelToPorts["3600"]);
+            return new Switch(
+              new Date().toISOString(),
+              "3600",
+              x,
+              y,
+              ModelToPorts["3600"]
+            );
           case "Router":
-            return new Router(Date.now(), "7200", x, y, ModelToPorts["c7200"]);
+            return new Router(
+              new Date().toISOString(),
+              "7200",
+              x,
+              y,
+              ModelToPorts["c7200"]
+            );
           case "Cloud":
-            return new Cloud(Date.now(), x, y);
+            return new Cloud(new Date().toISOString(), x, y);
           default:
-            return new PC(Date.now(), x, y);
+            return new PC(new Date().toISOString(), x, y);
         }
       };
 
@@ -70,7 +80,7 @@ export default function Canvas({
     }
   };
 
-  const onDragStart = (e: React.DragEvent<HTMLDivElement>, id: number) => {
+  const onDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
     e.dataTransfer.setData("id", id.toString());
 
     const emptyCanvas = document.createElement("canvas");
@@ -84,7 +94,7 @@ export default function Canvas({
     setTimeout(() => document.body.removeChild(emptyCanvas), 0);
   };
 
-  const onDragEnd = (e: React.DragEvent, id: number) => {
+  const onDragEnd = (e: React.DragEvent, id: string) => {
     const rect = e.currentTarget.parentElement!.getBoundingClientRect();
     let x = e.clientX - rect.left - e.currentTarget.scrollLeft - 20;
     let y = e.clientY - rect.top - e.currentTarget.scrollTop - 20;
@@ -105,7 +115,7 @@ export default function Canvas({
     e.preventDefault();
   };
 
-  const onDrag = (e: React.DragEvent<HTMLDivElement>, id: number) => {
+  const onDrag = (e: React.DragEvent<HTMLDivElement>, id: string) => {
     const rect = e.currentTarget.parentElement!.getBoundingClientRect();
     let x = e.clientX - rect.left - e.currentTarget.scrollLeft - 20;
     let y = e.clientY - rect.top - e.currentTarget.scrollTop - 20;
@@ -120,12 +130,12 @@ export default function Canvas({
     );
   };
 
-  const actionsClick = (e: React.MouseEvent<HTMLDivElement>, id: number) => {
+  const actionsClick = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
     e.stopPropagation();
-    setSelectedComponnent((prev) => (prev === id! ? 0 : id));
+    setSelectedComponnent((prev) => (prev === id! ? "" : id));
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setCanvasComponents((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -135,7 +145,7 @@ export default function Canvas({
     connectedTo: {
       port: string;
       device: Device;
-      instanceId: number;
+      node_id: string;
       port_number: number;
       index?: number;
       adapter_number: number;
@@ -150,37 +160,57 @@ export default function Canvas({
         x2: connectedTo.device.x! + 20,
         y2: connectedTo.device.y! + 20,
       });
-    } else if (selectedPort.instanceId !== connectedTo.instanceId) {
+    } else if (selectedPort.node_id !== connectedTo.node_id) {
       setConnections((prevConnections) => [
         ...prevConnections!,
         { from: selectedPort, to: connectedTo },
       ]);
-
       setCanvasComponents((prev) =>
-        prev.map((c, i) =>
-          i === compIndex
-            ? {
-                ...c,
-                takenPorts: [
-                  ...(c.takenPorts || []),
-                  { takenPort, connectedTo: selectedPort },
-                ],
+        prev.map((device) => {
+          if (device.id !== connectedTo.node_id) {
+            return device;
+          }
+
+          return {
+            ...device,
+            ports: device.ports!.map((port) => {
+              if (
+                port.adapter_number === connectedTo.adapter_number &&
+                port.port_number === connectedTo.port_number
+              ) {
+                return {
+                  ...port,
+                  isTaken: true,
+                };
               }
-            : c
-        )
+
+              return port;
+            }),
+          };
+        })
       );
       setCanvasComponents((prev) =>
-        prev.map((c, i) =>
-          c.id === selectedPort.instanceId
-            ? {
-                ...c,
-                takenPorts: [
-                  ...(c.takenPorts || []),
-                  { takenPort, connectedTo: connectedTo },
-                ],
+        prev.map((device) => {
+          if (device.id !== selectedPort.node_id) {
+            return device;
+          }
+
+          return {
+            ...device,
+            ports: device.ports!.map((port) => {
+              if (
+                port.adapter_number === selectedPort.adapter_number &&
+                port.port_number === selectedPort.port_number
+              ) {
+                return {
+                  ...port,
+                  isTaken: true,
+                };
               }
-            : c
-        )
+              return port;
+            }),
+          };
+        })
       );
 
       setSelectedPort(null);
@@ -201,57 +231,55 @@ export default function Canvas({
     setTempLine({ ...tempLine, x2: cursor.x, y2: cursor.y });
   };
 
-  const deleteConnection = async (device: Device, index: number) => {
-    const connectedTo = device.takenPorts?.find(
-      (port) => port.takenPort === index
-    );
-    if (!connectedTo) return;
+  const deleteConnection = async (
+    adapter_number: number,
+    port_number: number
+  ) => {
+    const removedConnections = connections?.find((con) => {
+      const isFromMatch =
+        con.from.adapter_number === adapter_number &&
+        con.from.port_number === port_number;
 
-    const targetDevice = connectedTo.connectedTo.device;
+      const isToMatch =
+        con.to.adapter_number === adapter_number &&
+        con.to.port_number === port_number;
 
-    setConnections((prev) =>
-      prev!.filter(
-        (con) =>
-          !(
-            (con.from.device.id === device.id &&
-              con.to.device.id === targetDevice.id) ||
-            (con.to.device.id === device.id &&
-              con.from.device.id === targetDevice.id)
-          )
-      )
-    );
+      return isFromMatch || isToMatch;
+    });
 
-    setCanvasComponents((prev) =>
-      prev.map((c) => {
-        if (c.id === device.id) {
-          return {
-            ...c,
-            takenPorts: c.takenPorts?.filter((p) => p.takenPort !== index),
-          };
-        }
+    setConnections((prev) => prev?.filter((con) => con !== removedConnections));
+    setCanvasComponents((prev) => {
+      return prev.map((device) => {
+        const isHara =
+          device.id === removedConnections?.from.node_id ||
+          device.id === removedConnections?.to.node_id;
+        if (!isHara) return device;
 
-        if (c.id === targetDevice.id) {
-          return {
-            ...c,
-            takenPorts: c.takenPorts?.filter(
-              (p) => p.connectedTo.device.id !== device.id
-            ),
-          };
-        }
-
-        return c;
-      })
-    );
-    console.log(connections);
+        return {
+          ...device,
+          ports: device.ports?.map((port) => {
+            if (
+              (port.adapter_number == removedConnections?.from.adapter_number &&
+                port.port_number == removedConnections.from.port_number) ||
+              (port.adapter_number == removedConnections?.to.adapter_number &&
+                port.port_number == removedConnections.to.port_number)
+            ) {
+              return { ...port, isTaken: false };
+            }
+            return { ...port };
+          }),
+        };
+      });
+    });
   };
 
   return (
     <div
-      className="w-full h-[540px] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
+      className="w-full h-[530px] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
       onDrop={onDrop}
       onDragOver={onDragOver}
       onClick={() => {
-        setSelectedComponnent(0);
+        setSelectedComponnent("");
         setEditComponnent(null);
       }}
     >
@@ -300,17 +328,19 @@ export default function Canvas({
               {comp.ports?.map((port, index) => (
                 <div
                   className="flex items-center  hover:bg-blue-600 rounded px-2 py-1 z-[100]"
-                  key={index}
+                  key={port.short_name}
                   onClick={() => {
-                    comp.takenPorts?.some((tp) => tp.takenPort === index)
-                      ? deleteConnection(comp, index)
+                    comp.ports?.some(
+                      (tp) => tp.short_name === port.short_name && tp.isTaken
+                    )
+                      ? deleteConnection(port.adapter_number, port.port_number)
                       : takePort(
                           index,
                           canvasComponents.findIndex((c) => c.id === comp.id),
                           {
                             port: port.short_name,
                             device: comp,
-                            instanceId: comp.id!,
+                            node_id: comp.id!,
                             port_number: port.port_number,
                             adapter_number: port.adapter_number,
                             index: canvasComponents.findIndex(
@@ -322,7 +352,9 @@ export default function Canvas({
                 >
                   <div
                     className={`w-3 h-2 rounded-full ${
-                      comp.takenPorts?.some((tp) => tp.takenPort === index)
+                      comp.ports?.some(
+                        (tp) => tp.short_name === port.short_name && tp.isTaken
+                      )
                         ? "bg-red-500"
                         : "bg-green-500"
                     } mr-1`}
@@ -356,10 +388,8 @@ export default function Canvas({
         onMouseMove={handleMouseMove}
       >
         {connections!.map((conn, idx) => {
-          const from = canvasComponents.find(
-            (c) => c.id === conn.from.device.id
-          );
-          const to = canvasComponents.find((c) => c.id === conn.to.device.id);
+          const from = canvasComponents.find((c) => c.id === conn.from.node_id);
+          const to = canvasComponents.find((c) => c.id === conn.to.node_id);
           if (!from || !to) return null;
           const x1 = from.x! + 20;
           const y1 = from.y! + 20;
@@ -391,6 +421,7 @@ export default function Canvas({
           />
         )}
       </svg>
+
     </div>
   );
 }

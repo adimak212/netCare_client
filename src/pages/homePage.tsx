@@ -6,6 +6,9 @@ import type { Device } from "../classes/Device";
 import WireImg from "../assets/icons/Wire.png";
 import { useParams } from "react-router-dom";
 import pcIcon from "../assets/icons/pc.png";
+import type { Link } from "../types/types.ts";
+import toast from "react-hot-toast";
+import playProject from "../assets/icons/playProject.png"
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -13,47 +16,60 @@ function homePage() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectMassege, setConnectMassege] = useState("Connect Componnents");
   const { id } = useParams<{ id: string }>() || "0";
-  const [connections, setConnections] = useState<
-    | {
-        from: {
-          port: string;
-          device: Device;
-          instanceId: number;
-          index?: number;
-          port_number?: number;
-          adapter_number: number;
-        };
-        to: {
-          port: string;
-          device: Device;
-          instanceId: number;
-          index?: number;
-          port_number?: number;
-          adapter_number: number;
-        };
-      }[]
-    | undefined
-  >([]);
+  const [connections, setConnections] = useState<Link[] | undefined>([]);
 
   useEffect(() => {
     if (!id) return;
     const fetchNodes = async () => {
       try {
-        const response = await axios.get<Device[]>(
-          "http://localhost:3000/getNodes",
+        const devices = await axios.get<Device[]>(
+          "http://localhost:3000/v1/projects/getProjectNodes",
           { params: { id } }
         );
-        console.log(response.data);
-        setCanvasComponents(response.data);
+        const links = await axios.get<Link[]>(
+          "http://localhost:3000/v1/projects/getProjectLinks",
+          {
+            params: { id },
+          }
+        );
+        console.log(devices.data);
+        console.log(links.data);
+        const finalDevices = devices.data.map((device) => ({
+          ...device,
+          ports: device.ports?.map((port) => {
+            const isTaken = links.data.some(
+              (link) =>
+                (link.from.adapter_number == port.adapter_number &&
+                  link.from.port_number == port.port_number &&
+                  link.from.node_id === device.id) ||
+                (link.to.adapter_number == port.adapter_number &&
+                  link.to.port_number == port.port_number &&
+                  link.to.node_id === device.id)
+            );
+            return {
+              ...port,
+              isTaken: isTaken,
+            };
+          }),
+        }));
+        console.log(finalDevices);
+        setCanvasComponents(finalDevices);
+        console.log(links.data);
+        setConnections(links.data);
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
     };
+
     const openProject = async () => {
       try {
-        const res = await axios.post(`http://localhost:3000/openProject`, {
-          params: { id },
-        });
+        const res = await axios.post(
+          "http://localhost:3000/v1/projects/openProject",
+          {
+            params: { id },
+          }
+        );
+
         console.log(res.data);
       } catch (error) {
         console.error("Error open project:", error);
@@ -71,14 +87,35 @@ function homePage() {
   };
 
   async function SendComponnents() {
-    console.log(connections);
-    const response = await axios.post("http://localhost:3000/createProject", {
-      canvasComponents,
-      ProjectName,
-      connections,
-    });
-    // console.log(response.data);
-    // console.log(ProjectName);
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/v1/projects/createProject",
+        {
+          canvasComponents,
+          ProjectName,
+          connections,
+        }
+      );
+      toast.success("project created :)", {
+        duration: 1500,
+        style: {
+          background: "#102235",
+          color: "white",
+        },
+      });
+      setCanvasComponents([]);
+      setProjectName("");
+    } catch (error) {
+      toast.error("project didnt created!", {
+        duration: 1500,
+        style: {
+          background: "#102235",
+          color: "white",
+          //border : "1px solid #1173d4"
+        },
+      });
+      console.log(error);
+    }
   }
 
   return (
@@ -106,8 +143,9 @@ function homePage() {
       </div>
       <div className="flex-1 flex flex-col items-center">
         <div className="flex justify-start w-full">
-          <div className="w-[4%] h-fit hover:bg-background">
-            <img src={pcIcon} alt="Play Project" className="w-[100%] h-fit" />
+          <div className="w-[4%] h-fit hover:bg-background opacity-95 mt-2 ml-3 mb-2">
+            <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+            <div>start</div>
           </div>
         </div>
         <Canvas

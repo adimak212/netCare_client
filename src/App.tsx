@@ -9,6 +9,7 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
+import {Toaster} from "react-hot-toast"
 
 function NavBar() {
   const location = useLocation();
@@ -16,7 +17,6 @@ function NavBar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-3 bg-gray-800 text-white shadow-md">
       <h1 className="text-xl font-bold">NetCare</h1>
-
       <div className="flex gap-4">
         <Link
           to="/"
@@ -48,6 +48,7 @@ export default function App() {
       <Router>
         <NavBar />
         <div className="pt-16">
+          <Toaster position = "top-right"/>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/projects" element={<MyProjectsPage />} />

@@ -4,7 +4,7 @@ import routerIcon from "../assets/icons/router.png";
 import cloudIcon from "../assets/icons/cloud.png";
 
 class Device {
-  id?: number;
+  id?: string;
   modelType?: string;
   icon?: string;
   x?: number;
@@ -15,18 +15,13 @@ class Device {
     port_number: number;
     short_name: string;
     adapter_number: number;
+    isTaken : boolean
   }[];
-  takenPorts?:
-    | {
-        takenPort: number;
-        connectedTo: { port: string; device: Device; instanceId: number };
-      }[]
-    | undefined;
   name?: string;
 }
 
 class PC extends Device {
-  constructor(id: number, x: number, y: number) {
+  constructor(id: string, x: number, y: number) {
     super();
     this.x = x;
     this.y = y;
@@ -40,6 +35,7 @@ class PC extends Device {
         port_number: 0,
         short_name: "e0",
         adapter_number: 0,
+        isTaken : false
       },
     ];
     this.name = "PC";
@@ -48,7 +44,7 @@ class PC extends Device {
 
 class Switch extends Device {
   constructor(
-    id: number,
+    id: string,
     modelType: string,
     x: number,
     y: number,
@@ -57,6 +53,7 @@ class Switch extends Device {
       port_number: number;
       short_name: string;
       adapter_number: number;
+      isTaken : boolean;
     }[]
   ) {
     super();
@@ -73,7 +70,7 @@ class Switch extends Device {
 
 class Router extends Device {
   constructor(
-    id: number,
+    id: string,
     modelType: string,
     x: number,
     y: number,
@@ -82,6 +79,7 @@ class Router extends Device {
       port_number: number;
       short_name: string;
       adapter_number: number;
+      isTaken : boolean;
     }[]
   ) {
     super();
@@ -97,7 +95,7 @@ class Router extends Device {
 }
 
 class Cloud extends Device {
-  constructor(id: number, x: number, y: number) {
+  constructor(id: string, x: number, y: number) {
     super();
     this.x = x;
     this.y = y;
@@ -108,6 +106,7 @@ class Cloud extends Device {
         port_number: 0,
         short_name: "e0",
         adapter_number: 0,
+        isTaken : false
       },
     ];
     this.deviceType = "cloud";

@@ -1,4 +1,3 @@
-import React from "react";
 import ProjectGallery  from "../componnents/myProjectsPage/projectsGallery.js";
 
 

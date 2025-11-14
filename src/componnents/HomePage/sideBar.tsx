@@ -18,28 +18,28 @@ const items: ComponentType[] = [
     label: "PC",
     icon: pcIcon,
     onDragStart,
-    instanceId: null,
+    node_id: null,
   },
   {
     id: "switch",
     label: "Switch",
     icon: switchIcon,
     onDragStart,
-    instanceId: null,
+    node_id: null,
   },
   {
     id: "router",
     label: "Router",
     icon: routerIcon,
     onDragStart,
-    instanceId: null,
+    node_id: null,
   },
   {
     id: "cloud",
     label: "Cloud",
     icon: cloudIcon,
     onDragStart,
-    instanceId: null,
+    node_id: null,
   },
 ];
 

@@ -18,7 +18,7 @@ function projectGallery() {
   useEffect(() =>  {
     try {
       const res =  axios
-      .get<Project[]>("http://localhost:3000/getAllProjects")
+      .get<Project[]>("http://localhost:3000/v1/projects/getAllProjects")
       .then((response) => {
         console.log(response.data);
         setProjects(response.data.sort((a, b) => a.name.localeCompare(b.name)));
@@ -32,7 +32,7 @@ function projectGallery() {
   
 
   const deleteProject = async (id: string, name: string) => {
-    // בקשת אישור מהמשתמש
+
     const result = await Swal.fire({
       title: "Are you sure?",
       text: `Confirm deletion of ${name} ? `,
@@ -46,7 +46,7 @@ function projectGallery() {
     });
 
     if (result.isConfirmed) {
-      await axios.get("http://localhost:3000/deleteProject", { params: { id } });
+      await axios.get("http://localhost:3000/v1/projects/deleteProject", { params: { id } });
       setProjects(projects.filter((a) => a.project_id != id));
 
       Swal.fire({
@@ -72,7 +72,7 @@ function projectGallery() {
           onClick = {() => handlePick(proj.project_id)}
         >
           <button
-            onClick={() => deleteProject(proj.project_id, proj.name)}
+            onClick={(e) =>{e.stopPropagation(); deleteProject(proj.project_id, proj.name)}}
             className="ml-3 mt-2 bg-red-500 rounded-md w-[20px] h-[20px] text-sm z-[100]"
           >
             x
