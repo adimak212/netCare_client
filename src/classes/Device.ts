@@ -104,7 +104,7 @@ class Cloud extends Device {
       {
         link_type: "ethernet",
         port_number: 0,
-        short_name: "e0",
+        short_name: "Etherner 2",
         adapter_number: 0,
         isTaken : false
       },

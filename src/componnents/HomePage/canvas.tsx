@@ -163,7 +163,11 @@ export default function Canvas({
     } else if (selectedPort.node_id !== connectedTo.node_id) {
       setConnections((prevConnections) => [
         ...prevConnections!,
-        { from: selectedPort, to: connectedTo },
+        {
+          from: selectedPort,
+          to: connectedTo,
+          link_id: new Date().toISOString(),
+        },
       ]);
       setCanvasComponents((prev) =>
         prev.map((device) => {
@@ -233,16 +237,19 @@ export default function Canvas({
 
   const deleteConnection = async (
     adapter_number: number,
-    port_number: number
+    port_number: number,
+    node_id: string
   ) => {
     const removedConnections = connections?.find((con) => {
       const isFromMatch =
         con.from.adapter_number === adapter_number &&
-        con.from.port_number === port_number;
+        con.from.port_number === port_number &&
+        con.from.node_id === node_id;
 
       const isToMatch =
         con.to.adapter_number === adapter_number &&
-        con.to.port_number === port_number;
+        con.to.port_number === port_number &&
+        con.to.node_id === node_id;
 
       return isFromMatch || isToMatch;
     });
@@ -333,7 +340,11 @@ export default function Canvas({
                     comp.ports?.some(
                       (tp) => tp.short_name === port.short_name && tp.isTaken
                     )
-                      ? deleteConnection(port.adapter_number, port.port_number)
+                      ? deleteConnection(
+                          port.adapter_number,
+                          port.port_number,
+                          comp.id!
+                        )
                       : takePort(
                           index,
                           canvasComponents.findIndex((c) => c.id === comp.id),
@@ -421,7 +432,6 @@ export default function Canvas({
           />
         )}
       </svg>
-
     </div>
   );
 }

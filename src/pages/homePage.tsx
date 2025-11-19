@@ -4,11 +4,11 @@ import { SideBar } from "../componnents/HomePage/sideBar.js";
 import axios from "axios";
 import type { Device } from "../classes/Device";
 import WireImg from "../assets/icons/Wire.png";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import pcIcon from "../assets/icons/pc.png";
 import type { Link } from "../types/types.ts";
 import toast from "react-hot-toast";
-import playProject from "../assets/icons/playProject.png"
+import playProject from "../assets/icons/playProject.png";
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -17,9 +17,19 @@ function homePage() {
   const [connectMassege, setConnectMassege] = useState("Connect Componnents");
   const { id } = useParams<{ id: string }>() || "0";
   const [connections, setConnections] = useState<Link[] | undefined>([]);
+  const [inProjectMassege, setinProjectMassege] = useState<string>(
+    "Create GNS3 Project"
+  );
+  const [update, setUpdate] = useState<number>(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setCanvasComponents([]);
+      setinProjectMassege("Create GNS3 Project");
+      return;
+    }
+    setinProjectMassege("Update Project");
     const fetchNodes = async () => {
       try {
         const devices = await axios.get<Device[]>(
@@ -32,8 +42,6 @@ function homePage() {
             params: { id },
           }
         );
-        console.log(devices.data);
-        console.log(links.data);
         const finalDevices = devices.data.map((device) => ({
           ...device,
           ports: device.ports?.map((port) => {
@@ -79,7 +87,7 @@ function homePage() {
     fetchNodes();
     openProject();
     console.log(id);
-  }, [id]);
+  }, [id, update]);
 
   const handaleConnectClick = () => {
     setIsConnecting(!isConnecting);
@@ -118,11 +126,28 @@ function homePage() {
     }
   }
 
+  const updateProject = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/v1/projects/updateProject",
+        {
+          canvasComponents,
+          ProjectName,
+          connections,
+          id,
+        }
+      );
+      console.log(canvasComponents);
+      setTimeout(()=>{
+        window.location.reload();
+      } , 1000);
+    } catch (error) {}
+  };
   return (
     <div className="w-[95%] mx-auto flex gap-10">
-      <div className="flex gap-6">
+      <div className="mt-1 flex gap-6 h-[90vh]">
         <div>
-          <div className="flex flex-col relative py-6">
+          <div className="flex flex-col relative py-6 ">
             <span className="font-bold text-2xl">Components</span>
             <SideBar />
           </div>
@@ -143,8 +168,16 @@ function homePage() {
       </div>
       <div className="flex-1 flex flex-col items-center">
         <div className="flex justify-start w-full">
-          <div className="w-[4%] h-fit hover:bg-background opacity-95 mt-2 ml-3 mb-2">
-            <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+          <div
+            className="w-[4%] h-fit  border border-transparent
+            hover:border-primary hover:border-2
+             duration-500 "
+          >
+            <img
+              src={playProject}
+              alt="Play Project"
+              className="w-[70%] h-fit opacity-75"
+            />
             <div>start</div>
           </div>
         </div>
@@ -157,18 +190,20 @@ function homePage() {
           connections={connections}
         />
         <div className="flex justify-around w-full ">
-          <input
-            className="bg-transparent focus-within:outline-none w-1/2 h-10 rounded-md mr-3 mt-3 px-4 border-[1px] border-primary border-opacity-20 placeholder:text-white placeholder:opacity-60"
-            type="text"
-            placeholder="Project Name"
-            value={ProjectName}
-            onChange={(event) => setProjectName(event.target.value)}
-          />
+          {!id && (
+            <input
+              className="bg-transparent focus-within:outline-none w-1/2 h-10 rounded-md mr-3 mt-3 px-4 border-[1px] border-primary border-opacity-20 placeholder:text-white placeholder:opacity-60"
+              type="text"
+              placeholder="Project Name"
+              value={ProjectName}
+              onChange={(event) => setProjectName(event.target.value)}
+            />
+          )}
           <button
             className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
-            onClick={SendComponnents}
+            onClick={id ? updateProject : SendComponnents}
           >
-            Create GNS3 Project
+            {inProjectMassege}
           </button>
         </div>
       </div>

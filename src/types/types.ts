@@ -42,6 +42,7 @@ export type Project = {
 };
 
 export type Link = {
+  link_id : string;
   from: {
     node_id: string;
     port_number?: number;

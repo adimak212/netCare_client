@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import type { Project } from "../../types/types";
 import Swal from "sweetalert2";
-import ProjectImg from "../../assets/icons/project.png";
+import projectIcon from "../../assets/icons/project.png"
 import { useNavigate } from "react-router-dom";
 
 
@@ -38,8 +38,8 @@ function projectGallery() {
       text: `Confirm deletion of ${name} ? `,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#1173d4",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#1173d4",
       confirmButtonText: "Yes, delete it!",
       background: "#102235",
       color: "#ffffff",
@@ -60,7 +60,7 @@ function projectGallery() {
     }
   };
   const handlePick = async (id: string) => {
-    navigate(`/${id}`); // 👈 סוגר נכון
+    navigate(`/${id}`); 
   };
 
   return (
@@ -78,7 +78,7 @@ function projectGallery() {
             x
           </button>
           <div className="flex justify-center items-center flex-col">
-            <img className="h-10 w-10" src={ProjectImg} alt="proj" />
+            <img className="h-10 w-10" src={projectIcon} alt="proj" />
             <div className="font-bold text-white mt-3">{proj.name}</div>
           </div>
         </div>
