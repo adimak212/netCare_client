@@ -17,12 +17,7 @@ function homePage() {
   const [connectMassege, setConnectMassege] = useState("Connect Componnents");
   const { id } = useParams<{ id: string }>() || "0";
   const [connections, setConnections] = useState<Link[] | undefined>([]);
-  const [inProjectMassege, setinProjectMassege] = useState<string>(
-    "Create GNS3 Project"
-  );
-  const [update, setUpdate] = useState<number>(0);
-  const navigate = useNavigate();
-
+  const [inProjectMassege, setinProjectMassege] = useState<string>("Create GNS3 Project");
   useEffect(() => {
     if (!id) {
       setCanvasComponents([]);
@@ -36,12 +31,9 @@ function homePage() {
           "http://localhost:3000/v1/projects/getProjectNodes",
           { params: { id } }
         );
-        const links = await axios.get<Link[]>(
-          "http://localhost:3000/v1/projects/getProjectLinks",
-          {
-            params: { id },
-          }
-        );
+        const links = await axios.get<Link[]>("http://localhost:3000/v1/projects/getProjectLinks", {
+          params: { id },
+        });
         const finalDevices = devices.data.map((device) => ({
           ...device,
           ports: device.ports?.map((port) => {
@@ -49,10 +41,10 @@ function homePage() {
               (link) =>
                 (link.from.adapter_number == port.adapter_number &&
                   link.from.port_number == port.port_number &&
-                  link.from.node_id === device.id) ||
+                  link.from.node_id === device.node_id) ||
                 (link.to.adapter_number == port.adapter_number &&
                   link.to.port_number == port.port_number &&
-                  link.to.node_id === device.id)
+                  link.to.node_id === device.node_id)
             );
             return {
               ...port,
@@ -71,12 +63,9 @@ function homePage() {
 
     const openProject = async () => {
       try {
-        const res = await axios.post(
-          "http://localhost:3000/v1/projects/openProject",
-          {
-            params: { id },
-          }
-        );
+        const res = await axios.post("http://localhost:3000/v1/projects/openProject", {
+          params: { id },
+        });
 
         console.log(res.data);
       } catch (error) {
@@ -87,7 +76,7 @@ function homePage() {
     fetchNodes();
     openProject();
     console.log(id);
-  }, [id, update]);
+  }, [id]);
 
   const handaleConnectClick = () => {
     setIsConnecting(!isConnecting);
@@ -96,14 +85,11 @@ function homePage() {
 
   async function SendComponnents() {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/v1/projects/createProject",
-        {
-          canvasComponents,
-          ProjectName,
-          connections,
-        }
-      );
+      const response = await axios.post("http://localhost:3000/v1/projects/createProject", {
+        canvasComponents,
+        ProjectName,
+        connections,
+      });
       toast.success("project created :)", {
         duration: 1500,
         style: {
@@ -128,20 +114,39 @@ function homePage() {
 
   const updateProject = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/v1/projects/updateProject",
-        {
-          canvasComponents,
-          ProjectName,
-          connections,
-          id,
-        }
-      );
-      console.log(canvasComponents);
-      setTimeout(()=>{
-        window.location.reload();
-      } , 1000);
-    } catch (error) {}
+      const { data, status } = await axios.post<{
+        devicesArray: typeof canvasComponents;
+        linksArray: typeof connections;
+      }>("http://localhost:3000/v1/projects/updateProject", {
+        canvasComponents,
+        connections,
+        id,
+      });
+      console.log(connections, data.linksArray);
+
+      setCanvasComponents(data.devicesArray);
+      setConnections(data.linksArray);
+      if (status == 200) {
+        toast.success("project updated :)", {
+          duration: 1500,
+          style: {
+            background: "#102235",
+            color: "white",
+          },
+        });
+      } else {
+        toast.error("project didnt updated!", {
+          duration: 1500,
+          style: {
+            background: "#102235",
+            color: "white",
+            //border : "1px solid #1173d4"
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="w-[95%] mx-auto flex gap-10">
@@ -173,11 +178,7 @@ function homePage() {
             hover:border-primary hover:border-2
              duration-500 "
           >
-            <img
-              src={playProject}
-              alt="Play Project"
-              className="w-[70%] h-fit opacity-75"
-            />
+            <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
             <div>start</div>
           </div>
         </div>

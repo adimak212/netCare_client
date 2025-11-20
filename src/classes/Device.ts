@@ -4,18 +4,18 @@ import routerIcon from "../assets/icons/router.png";
 import cloudIcon from "../assets/icons/cloud.png";
 
 class Device {
-  id?: string;
+  node_id?: string;
   modelType?: string;
   icon?: string;
   x?: number;
   y?: number;
-  deviceType?: "ethernet_switch" | "dynamips" | "vpcs" | "cloud";
+  node_type?: "ethernet_switch" | "dynamips" | "vpcs" | "cloud";
   ports?: {
     link_type: string;
     port_number: number;
     short_name: string;
     adapter_number: number;
-    isTaken : boolean
+    isTaken: boolean;
   }[];
   name?: string;
 }
@@ -27,15 +27,15 @@ class PC extends Device {
     this.y = y;
     this.modelType = "";
     this.icon = pcIcon;
-    this.id = id;
-    this.deviceType = "vpcs";
+    this.node_id = id;
+    this.node_type = "vpcs";
     this.ports = [
       {
         link_type: "ethernet",
         port_number: 0,
         short_name: "e0",
         adapter_number: 0,
-        isTaken : false
+        isTaken: false,
       },
     ];
     this.name = "PC";
@@ -53,16 +53,16 @@ class Switch extends Device {
       port_number: number;
       short_name: string;
       adapter_number: number;
-      isTaken : boolean;
+      isTaken: boolean;
     }[]
   ) {
     super();
     this.x = x;
     this.y = y;
     this.icon = switchIcon;
-    this.id = id;
+    this.node_id = id;
     this.modelType = modelType;
-    this.deviceType = "ethernet_switch";
+    this.node_type = "ethernet_switch";
     this.ports = ports;
     this.name = "Switch";
   }
@@ -79,16 +79,16 @@ class Router extends Device {
       port_number: number;
       short_name: string;
       adapter_number: number;
-      isTaken : boolean;
+      isTaken: boolean;
     }[]
   ) {
     super();
     this.x = x;
     this.y = y;
     this.icon = routerIcon;
-    this.id = id;
+    this.node_id = id;
     this.modelType = modelType;
-    this.deviceType = "dynamips";
+    this.node_type = "dynamips";
     this.ports = ports;
     this.name = "Router";
   }
@@ -99,17 +99,17 @@ class Cloud extends Device {
     super();
     this.x = x;
     this.y = y;
-    this.id = id;
+    this.node_id = id;
     this.ports = [
       {
         link_type: "ethernet",
         port_number: 0,
         short_name: "Etherner 2",
         adapter_number: 0,
-        isTaken : false
+        isTaken: false,
       },
     ];
-    this.deviceType = "cloud";
+    this.node_type = "cloud";
     this.modelType = "";
     this.icon = cloudIcon;
     this.name = "Cloud";

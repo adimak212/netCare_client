@@ -53,21 +53,9 @@ export default function Canvas({
           case "PC":
             return new PC(new Date().toISOString(), x, y);
           case "Switch":
-            return new Switch(
-              new Date().toISOString(),
-              "3600",
-              x,
-              y,
-              ModelToPorts["3600"]
-            );
+            return new Switch(new Date().toISOString(), "3600", x, y, ModelToPorts["3600"]);
           case "Router":
-            return new Router(
-              new Date().toISOString(),
-              "7200",
-              x,
-              y,
-              ModelToPorts["c7200"]
-            );
+            return new Router(new Date().toISOString(), "7200", x, y, ModelToPorts["c7200"]);
           case "Cloud":
             return new Cloud(new Date().toISOString(), x, y);
           default:
@@ -106,7 +94,7 @@ export default function Canvas({
       y = 0;
     }
     setCanvasComponents((prev) =>
-      prev.map((comp) => (comp.id === id ? { ...comp, x: x, y: y } : comp))
+      prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp))
     );
     setTempLine({ ...tempLine, x1: x, y1: y });
   };
@@ -116,18 +104,22 @@ export default function Canvas({
   };
 
   const onDrag = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-    const rect = e.currentTarget.parentElement!.getBoundingClientRect();
-    let x = e.clientX - rect.left - e.currentTarget.scrollLeft - 20;
-    let y = e.clientY - rect.top - e.currentTarget.scrollTop - 20;
-    if (x < 0) {
-      x = 0;
+    if (isConnecting) {
+      return;
+    } else {
+      const rect = e.currentTarget.parentElement!.getBoundingClientRect();
+      let x = e.clientX - rect.left - e.currentTarget.scrollLeft - 20;
+      let y = e.clientY - rect.top - e.currentTarget.scrollTop - 20;
+      if (x < 0) {
+        x = 0;
+      }
+      if (y < 0) {
+        y = 0;
+      }
+      setCanvasComponents((prev) =>
+        prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp))
+      );
     }
-    if (y < 0) {
-      y = 0;
-    }
-    setCanvasComponents((prev) =>
-      prev.map((comp) => (comp.id === id ? { ...comp, x: x, y: y } : comp))
-    );
   };
 
   const actionsClick = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
@@ -136,7 +128,15 @@ export default function Canvas({
   };
 
   const handleDelete = (id: string) => {
-    setCanvasComponents((prev) => prev.filter((p) => p.id !== id));
+    setCanvasComponents((prev) => prev.filter((p) => p.node_id !== id));
+    connections?.map(con => {
+      if(con.from.node_id === id ){
+        deleteConnection(con.from.adapter_number , con.from.port_number! , con.from.node_id);
+      }
+      if(con.to.node_id === id ){
+        deleteConnection(con.to.adapter_number , con.to.port_number! , con.to.node_id);
+      }
+    })
   };
 
   const takePort = async (
@@ -171,7 +171,7 @@ export default function Canvas({
       ]);
       setCanvasComponents((prev) =>
         prev.map((device) => {
-          if (device.id !== connectedTo.node_id) {
+          if (device.node_id !== connectedTo.node_id) {
             return device;
           }
 
@@ -195,7 +195,7 @@ export default function Canvas({
       );
       setCanvasComponents((prev) =>
         prev.map((device) => {
-          if (device.id !== selectedPort.node_id) {
+          if (device.node_id !== selectedPort.node_id) {
             return device;
           }
 
@@ -235,11 +235,7 @@ export default function Canvas({
     setTempLine({ ...tempLine, x2: cursor.x, y2: cursor.y });
   };
 
-  const deleteConnection = async (
-    adapter_number: number,
-    port_number: number,
-    node_id: string
-  ) => {
+  const deleteConnection = async (adapter_number: number, port_number: number, node_id: string) => {
     const removedConnections = connections?.find((con) => {
       const isFromMatch =
         con.from.adapter_number === adapter_number &&
@@ -258,8 +254,8 @@ export default function Canvas({
     setCanvasComponents((prev) => {
       return prev.map((device) => {
         const isHara =
-          device.id === removedConnections?.from.node_id ||
-          device.id === removedConnections?.to.node_id;
+          device.node_id === removedConnections?.from.node_id ||
+          device.node_id === removedConnections?.to.node_id;
         if (!isHara) return device;
 
         return {
@@ -294,86 +290,74 @@ export default function Canvas({
         <div className="flex justify-center items-center flex-col">
           <div>Drag and Drop Components Here</div>
           <div className="opacity-50 text-sm">
-            Start building your network topology by dragging componnents from
-            the left panel onto this canvas
+            Start building your network topology by dragging componnents from the left panel onto
+            this canvas
           </div>
         </div>
       )}
       {canvasComponents.map((comp) => (
         <div
           className="flex flex-col items-center text-sm relative cursor-pointer w-10 shadow-none"
-          onClick={(e) => actionsClick(e, comp.id!)}
-          key={comp.id}
+          onClick={(e) => actionsClick(e, comp.node_id!)}
+          key={comp.node_id}
           draggable
-          onDragStart={(e) => onDragStart(e, comp.id!)}
-          onDragEnd={(e) => onDragEnd(e, comp.id!)}
-          onDrag={(e) => onDrag(e, comp.id!)}
+          onDragStart={(e) => onDragStart(e , comp.node_id!)}
+          onDrag={(e) => {
+            onDrag(e, comp.node_id!);
+          }}
           style={{
             position: "absolute",
             left: comp.x,
             top: comp.y,
           }}
         >
-          {!isConnecting && selectedComponnent === comp.id ? (
+          {!isConnecting && selectedComponnent === comp.node_id ? (
             <div className="absolute top-0 right-[-100px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
               <button
                 className="block w-full text-xs text-left hover:bg-blue-600 rounded px-2 py-1"
-                onClick={() => comp.id && setEditComponnent(comp.id)}
+                onClick={() => comp.node_id && setEditComponnent(comp.node_id)}
               >
                 Edit
               </button>
               <button
                 className="block w-full text-xs text-left hover:bg-red-600 rounded px-2 py-1"
-                onClick={() => handleDelete(comp.id!)}
+                onClick={() => handleDelete(comp.node_id!)}
               >
                 Delete
               </button>
             </div>
           ) : null}
-          {isConnecting && selectedComponnent === comp.id ? (
+          {isConnecting && selectedComponnent === comp.node_id ? (
             <div className="absolute top-0 right-[-80px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
               {comp.ports?.map((port, index) => (
                 <div
                   className="flex items-center  hover:bg-blue-600 rounded px-2 py-1 z-[100]"
                   key={port.short_name}
                   onClick={() => {
-                    comp.ports?.some(
-                      (tp) => tp.short_name === port.short_name && tp.isTaken
-                    )
-                      ? deleteConnection(
-                          port.adapter_number,
-                          port.port_number,
-                          comp.id!
-                        )
+                    comp.ports?.some((tp) => tp.short_name === port.short_name && tp.isTaken)
+                      ? deleteConnection(port.adapter_number, port.port_number, comp.node_id!)
                       : takePort(
                           index,
-                          canvasComponents.findIndex((c) => c.id === comp.id),
+                          canvasComponents.findIndex((c) => c.node_id === comp.node_id),
                           {
                             port: port.short_name,
                             device: comp,
-                            node_id: comp.id!,
+                            node_id: comp.node_id!,
                             port_number: port.port_number,
                             adapter_number: port.adapter_number,
-                            index: canvasComponents.findIndex(
-                              (c) => c.id === comp.id
-                            ),
+                            index: canvasComponents.findIndex((c) => c.node_id === comp.node_id),
                           }
                         );
                   }}
                 >
                   <div
                     className={`w-3 h-2 rounded-full ${
-                      comp.ports?.some(
-                        (tp) => tp.short_name === port.short_name && tp.isTaken
-                      )
+                      comp.ports?.some((tp) => tp.short_name === port.short_name && tp.isTaken)
                         ? "bg-red-500"
                         : "bg-green-500"
                     } mr-1`}
                   ></div>
-                  <div
-                    key={index}
-                    className="block w-full text-xs text-left cursor-pointer"
-                  >
+                  <div key={index} className="block w-full text-xs text-left cursor-pointer">
                     {port.short_name}
                   </div>
                 </div>
@@ -381,16 +365,16 @@ export default function Canvas({
             </div>
           ) : null}
           <img
-            src={iconMap[comp.deviceType!]}
-            alt={`${comp.deviceType} ${comp.modelType}`}
+            src={iconMap[comp.node_type!]}
+            alt={`${comp.node_type} ${comp.modelType}`}
             className="w-10 rounded-md bg-primary p-2 bg-opacity-20 z-50"
           />
           <input
             className="bg-transparent focus-within:outline-none  text-center z-10"
             type="text"
             defaultValue={`${comp.name}`}
-            disabled={editComponnent !== comp.id}
-            ref={(el) => (editComponnent === comp.id ? el?.focus() : undefined)}
+            disabled={editComponnent !== comp.node_id}
+            ref={(el) => (editComponnent === comp.node_id ? el?.focus() : undefined)}
           />
         </div>
       ))}
@@ -399,8 +383,8 @@ export default function Canvas({
         onMouseMove={handleMouseMove}
       >
         {connections!.map((conn, idx) => {
-          const from = canvasComponents.find((c) => c.id === conn.from.node_id);
-          const to = canvasComponents.find((c) => c.id === conn.to.node_id);
+          const from = canvasComponents.find((c) => c.node_id === conn.from.node_id);
+          const to = canvasComponents.find((c) => c.node_id === conn.to.node_id);
           if (!from || !to) return null;
           const x1 = from.x! + 20;
           const y1 = from.y! + 20;
