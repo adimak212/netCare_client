@@ -18,6 +18,7 @@ class Device {
     isTaken: boolean;
   }[];
   name?: string;
+  template_id?: string;
 }
 
 class PC extends Device {
@@ -39,6 +40,7 @@ class PC extends Device {
       },
     ];
     this.name = "PC";
+    this.template_id = "19021f99-e36f-394d-b4a1-8aaa902ab9cc";
   }
 }
 
@@ -65,6 +67,7 @@ class Switch extends Device {
     this.node_type = "ethernet_switch";
     this.ports = ports;
     this.name = "Switch";
+    this.template_id = "1966b864-93e7-32d5-965f-001384eec461";
   }
 }
 
@@ -91,6 +94,7 @@ class Router extends Device {
     this.node_type = "dynamips";
     this.ports = ports;
     this.name = "Router";
+    this.template_id = "f5f30ee0-8e87-4cbf-8682-17e5aae51685";
   }
 }
 
@@ -113,6 +117,7 @@ class Cloud extends Device {
     this.modelType = "";
     this.icon = cloudIcon;
     this.name = "Cloud";
+    this.template_id = "39e257dc-8412-3174-b6b3-0ee3ed6a43e9";
   }
 }
 

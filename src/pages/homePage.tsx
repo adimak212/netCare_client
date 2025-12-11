@@ -4,11 +4,11 @@ import { SideBar } from "../componnents/HomePage/sideBar.js";
 import axios from "axios";
 import type { Device } from "../classes/Device";
 import WireImg from "../assets/icons/Wire.png";
-import { useNavigate, useParams } from "react-router-dom";
-import pcIcon from "../assets/icons/pc.png";
+import { useParams } from "react-router-dom";
 import type { Link } from "../types/types.ts";
 import toast from "react-hot-toast";
 import playProject from "../assets/icons/playProject.png";
+import SmartNetworkTopology from "../componnents/HomePage/smartNetworkCreator.tsx";
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -18,6 +18,7 @@ function homePage() {
   const { id } = useParams<{ id: string }>() || "0";
   const [connections, setConnections] = useState<Link[] | undefined>([]);
   const [inProjectMassege, setinProjectMassege] = useState<string>("Create GNS3 Project");
+  const [popUp, setPopUp] = useState(false);
   useEffect(() => {
     if (!id) {
       setCanvasComponents([]);
@@ -85,7 +86,7 @@ function homePage() {
 
   async function SendComponnents() {
     try {
-      const response = await axios.post("http://localhost:3000/v1/projects/createProject", {
+      await axios.post("http://localhost:3000/v1/projects/createProject", {
         canvasComponents,
         ProjectName,
         connections,
@@ -177,8 +178,13 @@ function homePage() {
             className="w-[4%] h-fit  border border-transparent
             hover:border-primary hover:border-2
              duration-500 "
+             onClick={() => setPopUp(true)}
           >
-            <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+            <img
+              src={playProject}
+              alt="Play Project"
+              className="w-[70%] h-fit opacity-75"
+            />
             <div>start</div>
           </div>
         </div>
@@ -208,6 +214,9 @@ function homePage() {
           </button>
         </div>
       </div>
+      {popUp && (
+        <SmartNetworkTopology setPopUp={setPopUp}/>
+      )}
     </div>
   );
 }
