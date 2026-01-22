@@ -5,7 +5,8 @@ import pcIcon from "../../assets/icons/pc.png";
 import switchIcon from "../../assets/icons/switch.png";
 import routerIcon from "../../assets/icons/router.png";
 import cloudIcon from "../../assets/icons/cloud.png";
-import { models, ModelToPorts } from "../../types/consts";
+import { models, ModelToPorts } from "../../config/consts.js";
+import useDnd from "../../hooks/useDnd.js";
 
 const iconMap: Record<string, string> = {
   ethernet_switch: switchIcon,
@@ -39,88 +40,12 @@ export default function Canvas({
   } | null>(null);
   const [isdrowing, setIsDrowing] = useState(false);
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const componentData = e.dataTransfer.getData("component");
-    if (componentData) {
-      const component: ComponentType = JSON.parse(componentData);
-      const pos = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - pos.left;
-      const y = e.clientY - pos.top;
-
-      const newClass = () => {
-        switch (component.label) {
-          case "PC":
-            return new PC(new Date().toISOString(), x, y);
-          case "Switch":
-            return new Switch(new Date().toISOString(), "3600", x, y, ModelToPorts["3600"]);
-          case "Router":
-            return new Router(new Date().toISOString(), "7200", x, y, ModelToPorts["c7200"]);
-          case "Cloud":
-            return new Cloud(new Date().toISOString(), x, y);
-          default:
-            return new PC(new Date().toISOString(), x, y);
-        }
-      };
-
-      const classCreated = newClass();
-      setCanvasComponents((prev) => [...prev, classCreated]);
-    }
-  };
-
-  const onDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-    e.dataTransfer.setData("id", id.toString());
-
-    const emptyCanvas = document.createElement("canvas");
-    emptyCanvas.width = 1;
-    emptyCanvas.height = 1;
-
-    document.body.appendChild(emptyCanvas);
-
-    e.dataTransfer.setDragImage(emptyCanvas, 0, 0);
-
-    setTimeout(() => document.body.removeChild(emptyCanvas), 0);
-  };
-
-  const onDragEnd = (e: React.DragEvent, id: string) => {
-    const rect = e.currentTarget.parentElement!.getBoundingClientRect();
-    let x = e.clientX - rect.left - e.currentTarget.scrollLeft - 20;
-    let y = e.clientY - rect.top - e.currentTarget.scrollTop - 20;
-    console.log(x, y);
-    if (x < 0) {
-      x = 0;
-    }
-    if (y < 0) {
-      y = 0;
-    }
-    setCanvasComponents((prev) =>
-      prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp))
-    );
-    setTempLine({ ...tempLine, x1: x, y1: y });
-  };
-
-  const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const onDrag = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-    if (isConnecting) {
-      return;
-    } else {
-      const rect = e.currentTarget.parentElement!.getBoundingClientRect();
-      let x = e.clientX - rect.left - e.currentTarget.scrollLeft - 20;
-      let y = e.clientY - rect.top - e.currentTarget.scrollTop - 20;
-      if (x < 0) {
-        x = 0;
-      }
-      if (y < 0) {
-        y = 0;
-      }
-      setCanvasComponents((prev) =>
-        prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp))
-      );
-    }
-  };
+  const { onDrop, onDragOver, onDragStart, onDrag } = useDnd(
+    setCanvasComponents,
+    setTempLine,
+    isConnecting,
+    tempLine
+  );
 
   const actionsClick = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
     e.stopPropagation();
@@ -129,14 +54,14 @@ export default function Canvas({
 
   const handleDelete = (id: string) => {
     setCanvasComponents((prev) => prev.filter((p) => p.node_id !== id));
-    connections?.map(con => {
-      if(con.from.node_id === id ){
-        deleteConnection(con.from.adapter_number , con.from.port_number! , con.from.node_id);
+    connections?.map((con) => {
+      if (con.from.node_id === id) {
+        deleteConnection(con.from.adapter_number, con.from.port_number!, con.from.node_id);
       }
-      if(con.to.node_id === id ){
-        deleteConnection(con.to.adapter_number , con.to.port_number! , con.to.node_id);
+      if (con.to.node_id === id) {
+        deleteConnection(con.to.adapter_number, con.to.port_number!, con.to.node_id);
       }
-    })
+    });
   };
 
   const takePort = async (
@@ -301,7 +226,7 @@ export default function Canvas({
           onClick={(e) => actionsClick(e, comp.node_id!)}
           key={comp.node_id}
           draggable
-          onDragStart={(e) => onDragStart(e , comp.node_id!)}
+          onDragStart={(e) => onDragStart(e, comp.node_id!)}
           onDrag={(e) => {
             onDrag(e, comp.node_id!);
           }}
