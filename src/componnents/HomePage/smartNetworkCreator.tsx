@@ -20,6 +20,9 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
   const [responseInfo, setResponseInfo] = useState([]);
   const [ranks, setRanks] = useState([]);
   const [topoPick, setTopoPick] = useState("");
+  const [canvasComponents , setcanvasComponents] = useState([]);
+  const [connections, setConnections] = useState([]);
+  const [ProjectName , setProjectName] = useState("");
 
   const generteTopology = async () => {
     if (
@@ -39,11 +42,13 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
           scalability: scalability,
           redundancy: redundancy,
           cost: cost,
+          pcs: pcs
         },
       })
       .then((response: any) => {
         setPage(1);
         setRanks(response.data.ranks);
+        console.log(response.data.ranks);
       });
   };
   const handleTopologyPick = async (topoName: string) => {
@@ -61,14 +66,40 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
         },
       })
       .then((response: any) => {
-        //const arr = Array.from(Object.entries(response.data.comp));
-        //console.log(arr)
         setResponseInfo(response.data.normalized);
-        console.log(response.data.normalized);
+        //setItems(response.data.packing.items)
+        //console.log(response.data.packing.items);
         setPage(3);
       });
   };
 
+  const createNodes = async () => {
+    console.log(responseInfo);
+    await axios
+      .get("http://localhost:3000/v1/algorithm/runAlgorithm", {
+        params: {
+          choice: "createNodes",
+          topology: topoPick,
+          normalized: JSON.stringify(responseInfo)
+        },
+      })
+      .then((response: any) => {
+        //const arr = Array.from(Object.entries(response.data.comp));
+        console.log(response)
+        setcanvasComponents(response.data.nodes) 
+        setConnections(response.data.links)
+        setPage(4);
+      });
+  };
+  const createProject = async () => {
+
+    await axios.post("http://localhost:3000/v1/projects/createProject", {
+        canvasComponents,
+        ProjectName,
+        connections,
+      });
+      setPopUp(false);
+  }
   return (
     <div
       className="fixed inset-0 flex justify-center items-center z-[100] h-[100vh] flex-col bg-black/20"
@@ -78,14 +109,14 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
         className="w-[30vw] h-[60vh] border border-1 border-primary bg-background z-[200] rounded-md "
         onClick={(e) => e.stopPropagation()}
       >
+        <div
+          onClick={() => setPopUp(false)}
+          className="cursor-pointer flex justify-between ml-2 mt-2"
+        >
+          <img src={closeIcon} alt="close" className="w-6 h-fit" />
+        </div>
         {page == 0 && (
           <>
-            <div
-              onClick={() => setPopUp(false)}
-              className="cursor-pointer flex justify-between ml-2 mt-2"
-            >
-              <img src={closeIcon} alt="close" className="w-6 h-fit" />
-            </div>
             <div className="flex flex-col justify-around items-center h-[80%]">
               <div className="font-extrabold text-lg">Smart network Generator</div>
               <div className="pt-10">
@@ -140,6 +171,23 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
                     className="text-center text-black w-12 rounded "
                   />{" "}
                 </div>
+                <div className="mt-2">
+                  <span className=" pr-2 text-lg">Pcs: </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={3}
+                    pattern="[0-9]*"
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      if (value === "" || (parseInt(value) >= 0 && parseInt(value) <= 100)) {
+                        e.target.value = value;
+                        setPcs(Number(value));
+                      }
+                    }}
+                    className="text-center text-black w-12 rounded "
+                  />{" "}
+                </div>
               </div>
               <div className=" font-extrabold text-lg">all params must be between 0 - 100</div>
               <button
@@ -154,12 +202,6 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
 
         {page == 1 && (
           <>
-            <div
-              onClick={() => setPopUp(false)}
-              className="cursor-pointer flex justify-between ml-2 mt-2"
-            >
-              <img src={closeIcon} alt="close" className="w-6 h-fit" />
-            </div>
             <div className="text-xl font-extrabold text-center">Pick Topology</div>
             <div className="flex flex-col mt-10 justify-center items-center h-[50%] ">
               {ranks.map((topo: { name: string; score: number }, i) => (
@@ -176,72 +218,83 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
 
         {page == 2 && (
           <>
-            <button onClick={() => setPopUp(false)}>close</button>
-            {TopologyToReq[topoPick].map((input) => {
-              const [inpValue, setter] = (() => {
-                switch (input) {
-                  case "Pcs":
-                    return [pcs, setPcs];
-                  case "Switches":
-                    return [switchs, setSwitchs];
-                  case "Routers":
-                    return [routers, setRouters];
-                  default:
-                    return [pcs, setPcs];
-                }
-              })();
+            <div className="flex flex-col justify-center items-center h-[80%]">
+              {TopologyToReq[topoPick].map((input) => {
+                const [inpValue, setter] = (() => {
+                  switch (input) {
+                    case "Pcs":
+                      return [pcs, setPcs];
+                    case "Switches":
+                      return [switchs, setSwitchs];
+                    case "Routers":
+                      return [routers, setRouters];
+                    default:
+                      return [pcs, setPcs];
+                  }
+                })();
 
-              return (
-                <div className="pt-3">
-                  <span className="mr-3">{input}: </span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={3}
-                    pattern="[0-9]*"
-                    value={inpValue}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9]/g, "");
-                      if (value === "" || (parseInt(value) >= 0 && parseInt(value) <= 100)) {
-                        e.target.value = value;
-                        setter(Number(value));
-                      }
-                    }}
-                    className="text-center text-black w-12 rounded mr-5"
-                  />{" "}
-                </div>
-              );
-            })}
-            <button
-              className="bg-primary rounded-md w-[50%] h-10 mt-3 font-bold"
-              onClick={() => createNetwork()}
-            >
-              Create Network
-            </button>
+                return (
+                  <div className="pt-3 ">
+                    <span className="mr-3 text-xl font-bold">{input}: </span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={3}
+                      pattern="[0-9]*"
+                      value={inpValue}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        if (value === "" || (parseInt(value) >= 0 && parseInt(value) <= 100)) {
+                          e.target.value = value;
+                          setter(Number(value));
+                        }
+                      }}
+                      className="text-center text-black w-12 rounded mr-5"
+                    />{" "}
+                  </div>
+                );
+              })}
+              <button
+                className="bg-primary rounded-md w-[50%] h-10 mt-3 font-bold"
+                onClick={() => createNetwork()}
+              >
+                Create Network
+              </button>
+            </div>
           </>
         )}
         {page == 3 && (
           <>
-            <button onClick={() => setPopUp(false)}>close</button>
-            {Object.entries(responseInfo).map(([compName, amount]) => (
-              <div>
-                <span>
-                  {compName}: {amount}
-                </span>
+            <div className="flex flex-col justify-center items-center">
+              {Object.entries(responseInfo).map(([compName, amount]) => (
+                <div>
+                  <span>
+                    {compName}: {amount}
+                  </span>
+                </div>
+              ))}
+              <div className="flex mt-5 w-[90%]">
+                <button className="bg-primary rounded-md w-[70%] h-10 mt-3 font-bold" onClick={() => createNodes()}>
+                  Create Nodes
+                </button>
+                <button
+                  className="bg-primary rounded-md w-[70%] h-10 ml-3 mt-3 font-bold"
+                  onClick={() => setPage(1)}
+                >
+                  Choose Topology
+                </button>
               </div>
-            ))}
-            <div className="flex mt-5 w-[90%]">
-              <button className="bg-primary rounded-md w-[70%] h-10 mt-3 font-bold">
-                Creat Network
-              </button>
-              <button
-                className="bg-primary rounded-md w-[70%] h-10 ml-3 mt-3 font-bold"
-                onClick={() => setPage(1)}
-              >
-                Choose Topology
-              </button>
             </div>
           </>
+        )}
+
+        {page == 4 &&(
+          <div>
+            <span>Choose Project Name: </span>
+            <input type="text"  className="text-black ml-2" onChange={(e) => setProjectName(e.target.value)}/>
+            <button onClick={() => createProject()}>Create Project</button>
+          </div>
+          
         )}
       </div>
     </div>

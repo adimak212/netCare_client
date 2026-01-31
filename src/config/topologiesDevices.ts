@@ -17,7 +17,8 @@ export const TopologyToReq :  Record<string , string[]> =
     ],
     "Mesh" : [
         "Routers" ,
-        "Switches"  
+        "Switches",
+        "Pcs"
     ],
     "Fat Tree" : [
         "Routers" ,
