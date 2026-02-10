@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect } from "react";
-import type { ComponentType, CanvasComponentProps } from "../../types/types.js";
-import { Device, PC, Router, Switch, Cloud } from "../../classes/Device.js";
+import { useState} from "react";
+import type {CanvasComponentProps } from "../../types/types.js";
+import { Device} from "../../classes/Device.js";
 import pcIcon from "../../assets/icons/pc.png";
 import switchIcon from "../../assets/icons/switch.png";
 import routerIcon from "../../assets/icons/router.png";
 import cloudIcon from "../../assets/icons/cloud.png";
-import { models, ModelToPorts } from "../../config/consts.js";
 import useDnd from "../../hooks/useDnd.js";
 
 const iconMap: Record<string, string> = {
@@ -19,7 +18,6 @@ export default function Canvas({
   canvasComponents,
   setCanvasComponents,
   isConnecting,
-  setIsConnecting,
   setConnections,
   connections,
 }: CanvasComponentProps) {
@@ -65,8 +63,8 @@ export default function Canvas({
   };
 
   const takePort = async (
-    takenPort: number,
-    compIndex: number,
+    // takenPort: number,
+    // compIndex: number,
     connectedTo: {
       port: string;
       device: Device;
@@ -262,8 +260,6 @@ export default function Canvas({
                     comp.ports?.some((tp) => tp.short_name === port.short_name && tp.isTaken)
                       ? deleteConnection(port.adapter_number, port.port_number, comp.node_id!)
                       : takePort(
-                          index,
-                          canvasComponents.findIndex((c) => c.node_id === comp.node_id),
                           {
                             port: port.short_name,
                             device: comp,

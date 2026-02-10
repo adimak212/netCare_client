@@ -23,8 +23,6 @@ const reqToKey: Record<(typeof Requirements)[number], keyof AlgorithmInputs> = {
 };
 export default function smartNetworkTopology({
   setPopUp,
-  setCanvasComponents,
-  setConnections,
 }: Props) {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
