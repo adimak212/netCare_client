@@ -2,14 +2,11 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import HomePage from "./pages/homePage";
 import MyProjectsPage from "./pages/myProjectsPage";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-} from "react-router-dom";
-import {Toaster} from "react-hot-toast"
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function NavBar() {
   const location = useLocation();
@@ -30,9 +27,7 @@ function NavBar() {
         <Link
           to="/projects"
           className={`px-3 py-2 rounded transition ${
-            location.pathname === "/projects"
-              ? "bg-gray-700"
-              : "hover:bg-gray-700"
+            location.pathname === "/projects" ? "bg-gray-700" : "hover:bg-gray-700"
           }`}
         >
           My Projects
@@ -45,17 +40,19 @@ function NavBar() {
 export default function App() {
   return (
     <DndProvider backend={HTML5Backend}>
-      <Router>
-        <NavBar />
-        <div className="pt-16">
-          <Toaster position = "top-right"/>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/projects" element={<MyProjectsPage />} />
-            <Route path="/:id" element ={<HomePage />} />
-          </Routes>
-        </div>
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <NavBar />
+          <div className="pt-16">
+            <Toaster position="top-right" />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/projects" element={<MyProjectsPage />} />
+              <Route path="/:id" element={<HomePage />} />
+            </Routes>
+          </div>
+        </Router>
+      </QueryClientProvider>
     </DndProvider>
   );
 }

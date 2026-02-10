@@ -12,12 +12,10 @@ function projectGallery() {
 
   useEffect(() => {
     try {
-      axios
-        .get<Project[]>("http://localhost:3000/v1/projects/getAllProjects")
-        .then((response) => {
-          console.log(response.data);
-          setProjects(response.data.sort((a, b) => a.name.localeCompare(b.name)));
-        });
+      axios.get<Project[]>("http://localhost:3000/v1/projects/getAllProjects").then((response) => {
+        console.log(response.data);
+        setProjects(response.data.sort((a, b) => a.name.localeCompare(b.name)));
+      });
     } catch (error) {
       console.log("Error" + error);
     }
@@ -42,7 +40,7 @@ function projectGallery() {
 
       Swal.fire({
         title: "Deleted!",
-        text: "Your file has been deleted.",
+        text: "Your Project has been deleted.",
         icon: "success",
         background: "#102235",
         color: "#ffffff",
@@ -56,27 +54,41 @@ function projectGallery() {
 
   return (
     <div className="w-11/12 h-[80%] flex justify-center items-center flex-wrap relative overflow-auto">
-      {projects.map((proj) => (
-        <div
-          key={proj.project_id}
-          className="m-5 bg-background w-40 h-32 rounded-md cursor-pointer z-[50]"
-          onClick={() => handlePick(proj.project_id)}
-        >
-          <img
-            src={deleteIcon}
-            alt="delete icon"
-            className="w-[25px] h-fit m-1"
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteProject(proj.project_id , proj.name);
-            }}
-          />
-          <div className="flex justify-center items-center flex-col">
-            <img className="h-10 w-10" src={projectIcon} alt="proj" />
-            <div className="font-bold text-white mt-3">{proj.name}</div>
+      {projects.length > 0 ? (
+        projects.map((proj) => (
+          <div
+            key={proj.project_id}
+            className="m-5 bg-background w-40 h-32 rounded-md cursor-pointer z-[50]"
+            onClick={() => handlePick(proj.project_id)}
+          >
+            <img
+              src={deleteIcon}
+              alt="delete icon"
+              className="w-[25px] h-fit m-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteProject(proj.project_id, proj.name);
+              }}
+            />
+            <div className="flex justify-center items-center flex-col">
+              <img className="h-10 w-10" src={projectIcon} alt="proj" />
+              <div className="font-bold text-white mt-3">{proj.name}</div>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <>
+          <div className="flex justify-center items-center flex-col">
+            <div>You Don't Have Any Projects</div>
+            <div className="opacity-50 text-sm">
+              Start building your network topology by click button 
+            </div>
+            <button className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold" onClick={() => navigate(`/`)}>
+              New Project +
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

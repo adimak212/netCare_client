@@ -1,4 +1,4 @@
-import { useState } from "react";
+//import { useState } from "react";
 import { Device } from "../classes/Device";
 import { PC, Switch, Router, Cloud } from "../classes/Device";
 import type { ComponentType, TempLine } from "../types/types";
@@ -10,7 +10,6 @@ export default function useDnd(
   isConnecting: boolean,
   tempLine: TempLine
 ) {
-  const [selectedComponnent, setSelectedComponnent] = useState<string>("");
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const componentData = e.dataTransfer.getData("component");

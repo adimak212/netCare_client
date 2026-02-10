@@ -215,7 +215,7 @@ function homePage() {
         </div>
       </div>
       {popUp && (
-        <SmartNetworkTopology setPopUp={setPopUp}/>
+        <SmartNetworkTopology setPopUp={setPopUp} setCanvasComponents={setCanvasComponents} setConnections={setConnections}/>
       )}
     </div>
   );
