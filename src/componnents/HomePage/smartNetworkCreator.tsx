@@ -1,13 +1,13 @@
 import { useState, type SetStateAction } from "react";
-import closeIcon from "../../assets/icons/close.png";
-import { Requirements } from "../../config/topologiesDevices.js";
+import closeIcon from "@/assets/icons/close.png";
+import { Requirements } from "@/config/topologiesDevices.js";
 import { OrbitProgress } from "react-loading-indicators";
-import { useRunAlgorithm } from "../../hooks/useRunAlgorithm .js";
-import type { AlgorithmInputs, Link, Rank } from "../../types/types.js";
-import { useCreateNodes } from "../../hooks/useCreateNodes.js";
-import { useCreatProject } from "../../hooks/useCreatProject.js";
+import { useRunAlgorithm } from "@/hooks/useRunAlgorithm .js";
+import type { AlgorithmInputs, Link, Rank } from "@/types/types.js";
+import { useCreateNodes } from "@/hooks/useCreateNodes.js";
+import { useCreatProject } from "@/hooks/useCreatProject.js";
 import toast from "react-hot-toast";
-import type { Device } from "../../classes/Device.js";
+import type { Device } from "@/classes/Device.js";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -21,9 +21,7 @@ const reqToKey: Record<(typeof Requirements)[number], keyof AlgorithmInputs> = {
   Redundancy: "redundancy",
   Cost: "cost",
 };
-export default function smartNetworkTopology({
-  setPopUp,
-}: Props) {
+export default function smartNetworkTopology({ setPopUp }: Props) {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [ProjectName, setProjectName] = useState("");

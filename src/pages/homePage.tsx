@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import Canvas from "../componnents/HomePage/canvas.js";
-import { SideBar } from "../componnents/HomePage/sideBar.js";
+import Canvas from "@/componnents/HomePage/canvas.js";
+import { SideBar } from "@/componnents/HomePage/sideBar.js";
 import axios from "axios";
-import type { Device } from "../classes/Device";
-import WireImg from "../assets/icons/Wire.png";
+import { Device } from "@/classes/Device";
+import WireImg from "@/assets/icons/Wire.png";
 import { useParams } from "react-router-dom";
-import type { Link } from "../types/types.ts";
+import type { Link } from "@/types/types.ts";
 import toast from "react-hot-toast";
-import playProject from "../assets/icons/playProject.png";
-import SmartNetworkTopology from "../componnents/HomePage/smartNetworkCreator.tsx";
+import playProject from "@/assets/icons/playProject.png";
+import AI from "@/assets/icons/AI.png";
+import SmartNetworkTopology from "@/componnents/HomePage/smartNetworkCreator.tsx";
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -30,7 +31,7 @@ function homePage() {
       try {
         const devices = await axios.get<Device[]>(
           "http://localhost:3000/v1/projects/getProjectNodes",
-          { params: { id } }
+          { params: { id } },
         );
         const links = await axios.get<Link[]>("http://localhost:3000/v1/projects/getProjectLinks", {
           params: { id },
@@ -45,11 +46,12 @@ function homePage() {
                   link.from.node_id === device.node_id) ||
                 (link.to.adapter_number == port.adapter_number &&
                   link.to.port_number == port.port_number &&
-                  link.to.node_id === device.node_id)
+                  link.to.node_id === device.node_id),
             );
             return {
               ...port,
               isTaken: isTaken,
+              isOn: (device.status === "started"),
             };
           }),
         }));
@@ -57,6 +59,7 @@ function homePage() {
         setCanvasComponents(finalDevices);
         console.log(links.data);
         setConnections(links.data);
+        openProject();
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
@@ -67,7 +70,6 @@ function homePage() {
         const res = await axios.post("http://localhost:3000/v1/projects/openProject", {
           params: { id },
         });
-
         console.log(res.data);
       } catch (error) {
         console.error("Error open project:", error);
@@ -79,9 +81,40 @@ function homePage() {
     console.log(id);
   }, [id]);
 
+  const checkNodes = async () => {
+    try {
+        const res = await axios.get<Device[]>("http://localhost:3000/v1/projects/getProjectNodes", {
+          params: { id },
+        });
+       const finalDevices = res.data.map((device) => ({
+          ...device,
+          ports: device.ports?.map((port) => {
+            return {
+              ...port,
+              isOn: (device.status === "started")
+            };
+          }),
+        }));
+        setCanvasComponents(finalDevices);
+      } catch (error) {
+        console.error("Error check nodes in project:", error);
+      }
+  }
+
   const handaleConnectClick = () => {
     setIsConnecting(!isConnecting);
     setConnectMassege(isConnecting ? "Connect Componnents" : "Stop Connect");
+  };
+
+  const startProject = async () => {
+    try {
+      const res = await axios.post("http://localhost:3000/v1/projects/startProject", {
+        params: { id },
+      });
+      checkNodes();
+    } catch (error) {
+      console.error("Error start project:", error);
+    }
   };
 
   async function SendComponnents() {
@@ -173,19 +206,24 @@ function homePage() {
         <div className="w-[1px] h-90vh bg-primary bg-opacity-20"></div>
       </div>
       <div className="flex-1 flex flex-col items-center">
-        <div className="flex justify-start w-full">
+        <div className="flex w-full items-center">
           <div
-            className="w-[4%] h-fit  border border-transparent
-            hover:border-primary hover:border-2
-             duration-500 "
-             onClick={() => setPopUp(true)}
+            className="flex bg-primary rounded-md w-[16%] h-[60%] items-center justify-center mr-3 cursor-pointer"
+            onClick={checkNodes}
           >
-            <img
-              src={playProject}
-              alt="Play Project"
-              className="w-[70%] h-fit opacity-75"
-            />
-            <div>start</div>
+            <img src={AI} className="w-[15%] mr-2" />
+            <button className="font-bold">Create With AI</button>
+          </div>
+          <div className="flex justify-start w-full">
+            <div
+              className="w-[5%] h-fit  border border-transparent
+            hover:border-primary hover:border-2
+             duration-500 rounded-md"
+              onClick={startProject}
+            >
+              <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+              <div>start</div>
+            </div>
           </div>
         </div>
         <Canvas
@@ -215,7 +253,11 @@ function homePage() {
         </div>
       </div>
       {popUp && (
-        <SmartNetworkTopology setPopUp={setPopUp} setCanvasComponents={setCanvasComponents} setConnections={setConnections}/>
+        <SmartNetworkTopology
+          setPopUp={setPopUp}
+          setCanvasComponents={setCanvasComponents}
+          setConnections={setConnections}
+        />
       )}
     </div>
   );

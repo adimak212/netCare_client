@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import type { Project } from "../../types/types";
+import type { Project } from "@/types/types";
 import Swal from "sweetalert2";
-import projectIcon from "../../assets/icons/project.png";
-import deleteIcon from "../../assets/icons/delete.png";
+import projectIcon from "@/assets/icons/project.png";
+import deleteIcon from "@/assets/icons/delete.png";
 import { useNavigate } from "react-router-dom";
 
 function projectGallery() {
@@ -40,7 +40,7 @@ function projectGallery() {
 
       Swal.fire({
         title: "Deleted!",
-        text: "Your Project has been deleted.",
+        text: "Your Project has been deleted",
         icon: "success",
         background: "#102235",
         color: "#ffffff",
@@ -81,9 +81,12 @@ function projectGallery() {
           <div className="flex justify-center items-center flex-col">
             <div>You Don't Have Any Projects</div>
             <div className="opacity-50 text-sm">
-              Start building your network topology by click button 
+              Start building your network topology by click button
             </div>
-            <button className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold" onClick={() => navigate(`/`)}>
+            <button
+              className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
+              onClick={() => navigate(`/`)}
+            >
               New Project +
             </button>
           </div>

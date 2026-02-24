@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import type { CreateNodesResponse } from "../types/types";
+import type { CreateNodesResponse } from "@/types/types";
 
 type CreateNodesVars = {
-  topoPick: unknown;          
-  responseInfo: unknown;   
+  topoPick: unknown;
+  responseInfo: unknown;
 };
 
 export function useCreateNodes() {
@@ -18,7 +18,7 @@ export function useCreateNodes() {
             topology: topoPick,
             normalized: JSON.stringify(responseInfo),
           },
-        }
+        },
       );
       return res.data;
     },

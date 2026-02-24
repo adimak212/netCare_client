@@ -1,14 +1,11 @@
 import DraggableItem from "./DraggableItem.js";
-import type { ComponentType } from "../../types/types.js";
-import pcIcon from "../../assets/icons/pc.png";
-import switchIcon from "../../assets/icons/switch.png";
-import routerIcon from "../../assets/icons/router.png";
-import cloudIcon from "../../assets/icons/cloud.png";
+import type { ComponentType } from "@/types/types.js";
+import pcIcon from "@/assets/icons/pc.png";
+import switchIcon from "@/assets/icons/switch.png";
+import routerIcon from "@/assets/icons/router.png";
+import cloudIcon from "@/assets/icons/cloud.png";
 
-const onDragStart = (
-  e: React.DragEvent<HTMLDivElement>,
-  component: ComponentType
-) => {
+const onDragStart = (e: React.DragEvent<HTMLDivElement>, component: ComponentType) => {
   e.dataTransfer.setData("component", JSON.stringify(component));
 };
 

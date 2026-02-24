@@ -1,7 +1,7 @@
-import pcIcon from "../assets/icons/pc.png";
-import switchIcon from "../assets/icons/switch.png";
-import routerIcon from "../assets/icons/router.png";
-import cloudIcon from "../assets/icons/cloud.png";
+import pcIcon from "@/assets/icons/pc.png";
+import switchIcon from "@/assets/icons/switch.png";
+import routerIcon from "@/assets/icons/router.png";
+import cloudIcon from "@/assets/icons/cloud.png";
 
 class Device {
   node_id?: string;
@@ -16,9 +16,11 @@ class Device {
     short_name: string;
     adapter_number: number;
     isTaken: boolean;
+    isOn: boolean;
   }[];
   name?: string;
   template_id?: string;
+  status: string = "stopped";
 }
 
 class PC extends Device {
@@ -37,6 +39,7 @@ class PC extends Device {
         short_name: "e0",
         adapter_number: 0,
         isTaken: false,
+        isOn: false,
       },
     ];
     this.name = "PC";
@@ -56,7 +59,8 @@ class Switch extends Device {
       short_name: string;
       adapter_number: number;
       isTaken: boolean;
-    }[]
+      isOn: boolean;
+    }[],
   ) {
     super();
     this.x = x;
@@ -83,7 +87,8 @@ class Router extends Device {
       short_name: string;
       adapter_number: number;
       isTaken: boolean;
-    }[]
+      isOn: false;
+    }[],
   ) {
     super();
     this.x = x;
@@ -111,6 +116,7 @@ class Cloud extends Device {
         short_name: "Etherner 2",
         adapter_number: 0,
         isTaken: false,
+        isOn: false,
       },
     ];
     this.node_type = "cloud";

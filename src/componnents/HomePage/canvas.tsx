@@ -1,11 +1,11 @@
-import { useState} from "react";
-import type {CanvasComponentProps } from "../../types/types.js";
-import { Device} from "../../classes/Device.js";
-import pcIcon from "../../assets/icons/pc.png";
-import switchIcon from "../../assets/icons/switch.png";
-import routerIcon from "../../assets/icons/router.png";
-import cloudIcon from "../../assets/icons/cloud.png";
-import useDnd from "../../hooks/useDnd.js";
+import { useState } from "react";
+import type { CanvasComponentProps } from "@/types/types.js";
+import { Device } from "@/classes/Device.js";
+import pcIcon from "@/assets/icons/pc.png";
+import switchIcon from "@/assets/icons/switch.png";
+import routerIcon from "@/assets/icons/router.png";
+import cloudIcon from "@/assets/icons/cloud.png";
+import useDnd from "@/hooks/useDnd";
 
 const iconMap: Record<string, string> = {
   ethernet_switch: switchIcon,
@@ -42,7 +42,7 @@ export default function Canvas({
     setCanvasComponents,
     setTempLine,
     isConnecting,
-    tempLine
+    tempLine,
   );
 
   const actionsClick = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
@@ -72,7 +72,7 @@ export default function Canvas({
       port_number: number;
       index?: number;
       adapter_number: number;
-    }
+    },
   ) => {
     if (!selectedPort) {
       setSelectedPort(connectedTo);
@@ -114,7 +114,7 @@ export default function Canvas({
               return port;
             }),
           };
-        })
+        }),
       );
       setCanvasComponents((prev) =>
         prev.map((device) => {
@@ -137,7 +137,7 @@ export default function Canvas({
               return port;
             }),
           };
-        })
+        }),
       );
 
       setSelectedPort(null);
@@ -176,19 +176,19 @@ export default function Canvas({
     setConnections((prev) => prev?.filter((con) => con !== removedConnections));
     setCanvasComponents((prev) => {
       return prev.map((device) => {
-        const isHara =
-          device.node_id === removedConnections?.from.node_id ||
-          device.node_id === removedConnections?.to.node_id;
-        if (!isHara) return device;
-
+        const isFrom = device.node_id === removedConnections?.from.node_id;
+        const isTo = device.node_id === removedConnections?.to.node_id;
+        if (!isTo && !isFrom) return device;
         return {
           ...device,
           ports: device.ports?.map((port) => {
             if (
               (port.adapter_number == removedConnections?.from.adapter_number &&
-                port.port_number == removedConnections.from.port_number) ||
+                port.port_number == removedConnections.from.port_number &&
+                isFrom) ||
               (port.adapter_number == removedConnections?.to.adapter_number &&
-                port.port_number == removedConnections.to.port_number)
+                port.port_number == removedConnections.to.port_number &&
+                isTo)
             ) {
               return { ...port, isTaken: false };
             }
@@ -259,16 +259,14 @@ export default function Canvas({
                   onClick={() => {
                     comp.ports?.some((tp) => tp.short_name === port.short_name && tp.isTaken)
                       ? deleteConnection(port.adapter_number, port.port_number, comp.node_id!)
-                      : takePort(
-                          {
-                            port: port.short_name,
-                            device: comp,
-                            node_id: comp.node_id!,
-                            port_number: port.port_number,
-                            adapter_number: port.adapter_number,
-                            index: canvasComponents.findIndex((c) => c.node_id === comp.node_id),
-                          }
-                        );
+                      : takePort({
+                          port: port.short_name,
+                          device: comp,
+                          node_id: comp.node_id!,
+                          port_number: port.port_number,
+                          adapter_number: port.adapter_number,
+                          index: canvasComponents.findIndex((c) => c.node_id === comp.node_id),
+                        });
                   }}
                 >
                   <div
@@ -311,18 +309,50 @@ export default function Canvas({
           const y1 = from.y! + 20;
           const x2 = to.x! + 20;
           const y2 = to.y! + 20;
+          const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+          //const
 
           return (
-            <line
-              key={idx}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke="cyan"
-              strokeWidth="2"
-              className="opacity-80"
-            />
+            <>
+              <line
+                key={idx}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke="cyan"
+                strokeWidth="2"
+                className="relative opacity-80"
+              />
+              <circle
+                cx={lerp(x1, x2, 0.2)}
+                cy={lerp(y1, y2, 0.2)}
+                r={5}
+                fill={
+                  from.ports?.find(
+                    (port) =>
+                      port.port_number === conn.from.port_number &&
+                      port.adapter_number === conn.from.adapter_number,
+                  )?.isOn
+                    ? "#64fc05"
+                    : "#fc0505"
+                }
+              />
+              <circle
+                cx={lerp(x1, x2, 0.8)}
+                cy={lerp(y1, y2, 0.8)}
+                r={5}
+                fill={
+                  to.ports?.find(
+                    (port) =>
+                      port.port_number === conn.to.port_number &&
+                      port.adapter_number === conn.to.adapter_number,
+                  )?.isOn
+                    ? "green"
+                    : "red"
+                }
+              />
+            </>
           );
         })}
         {isdrowing && tempLine && (

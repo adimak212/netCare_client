@@ -1,4 +1,4 @@
-import type { Device } from "../classes/Device.js";
+import type { Device } from "@/classes/Device.js";
 
 export type ComponentType = {
   id: string;

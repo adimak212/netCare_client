@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import type {RunAlgorithmResponse , RunAlgorithmParams} from "../types/types"
+import type { RunAlgorithmResponse, RunAlgorithmParams } from "@/types/types";
 
 export const useRunAlgorithm = () =>
   useMutation({
@@ -12,7 +12,7 @@ export const useRunAlgorithm = () =>
             choice: "bestfit",
             ...params,
           },
-        }
+        },
       );
       return res.data;
     },

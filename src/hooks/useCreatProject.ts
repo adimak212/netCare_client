@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import type { CreatProjectParams, CreatProjectResponse } from "../types/types";
+import type { CreatProjectParams, CreatProjectResponse } from "@/types/types";
 
 export const useCreatProject = () =>
   useMutation({

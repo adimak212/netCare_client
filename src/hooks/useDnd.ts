@@ -1,14 +1,14 @@
 //import { useState } from "react";
-import { Device } from "../classes/Device";
-import { PC, Switch, Router, Cloud } from "../classes/Device";
-import type { ComponentType, TempLine } from "../types/types";
-import { ModelToPorts } from "../config/consts";
+import { Device } from "@/classes/Device";
+import { PC, Switch, Router, Cloud } from "@/classes/Device";
+import type { ComponentType, TempLine } from "@/types/types";
+import { ModelToPorts } from "@/config/consts";
 
 export default function useDnd(
   setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>,
   setTempLine: React.Dispatch<React.SetStateAction<TempLine>>,
   isConnecting: boolean,
-  tempLine: TempLine
+  tempLine: TempLine,
 ) {
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -65,7 +65,7 @@ export default function useDnd(
       y = 0;
     }
     setCanvasComponents((prev) =>
-      prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp))
+      prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp)),
     );
     setTempLine({ ...tempLine, x1: x, y1: y });
   };
@@ -88,7 +88,7 @@ export default function useDnd(
         y = 0;
       }
       setCanvasComponents((prev) =>
-        prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp))
+        prev.map((comp) => (comp.node_id === id ? { ...comp, x: x, y: y } : comp)),
       );
     }
   };
