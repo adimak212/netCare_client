@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import type { Link } from "@/types/types.ts";
 import toast from "react-hot-toast";
 import playProject from "@/assets/icons/playProject.png";
+import stopProjectImg from "@/assets/icons/stopProject.png";
 import AI from "@/assets/icons/AI.png";
 import SmartNetworkTopology from "@/componnents/HomePage/smartNetworkCreator.tsx";
 
@@ -51,7 +52,7 @@ function homePage() {
             return {
               ...port,
               isTaken: isTaken,
-              isOn: (device.status === "started"),
+              isOn: device.status === "started",
             };
           }),
         }));
@@ -83,23 +84,23 @@ function homePage() {
 
   const checkNodes = async () => {
     try {
-        const res = await axios.get<Device[]>("http://localhost:3000/v1/projects/getProjectNodes", {
-          params: { id },
-        });
-       const finalDevices = res.data.map((device) => ({
-          ...device,
-          ports: device.ports?.map((port) => {
-            return {
-              ...port,
-              isOn: (device.status === "started")
-            };
-          }),
-        }));
-        setCanvasComponents(finalDevices);
-      } catch (error) {
-        console.error("Error check nodes in project:", error);
-      }
-  }
+      const res = await axios.get<Device[]>("http://localhost:3000/v1/projects/getProjectNodes", {
+        params: { id },
+      });
+      const finalDevices = res.data.map((device) => ({
+        ...device,
+        ports: device.ports?.map((port) => {
+          return {
+            ...port,
+            isOn: device.status === "started",
+          };
+        }),
+      }));
+      setCanvasComponents(finalDevices);
+    } catch (error) {
+      console.error("Error check nodes in project:", error);
+    }
+  };
 
   const handaleConnectClick = () => {
     setIsConnecting(!isConnecting);
@@ -111,11 +112,24 @@ function homePage() {
       const res = await axios.post("http://localhost:3000/v1/projects/startProject", {
         params: { id },
       });
+      console.log(res.data);
       checkNodes();
     } catch (error) {
       console.error("Error start project:", error);
     }
   };
+
+  const stopProject = async () => {
+    try {
+      const res = await axios.post("http://localhost:3000/v1/projects/stopProject", {
+        params: { id },
+      });
+      console.log(res.data);
+      checkNodes();
+    } catch (error) {
+      console.error("Error Stopping project:", error);
+    }
+  }
 
   async function SendComponnents() {
     try {
@@ -208,21 +222,32 @@ function homePage() {
       <div className="flex-1 flex flex-col items-center">
         <div className="flex w-full items-center">
           <div
-            className="flex bg-primary rounded-md w-[16%] h-[60%] items-center justify-center mr-3 cursor-pointer"
-            onClick={checkNodes}
+            className="flex bg-primary rounded-md w-[15%] h-[60%] items-center justify-center mr-3 cursor-pointer"
+            onClick={() => setPopUp(true)}
           >
             <img src={AI} className="w-[15%] mr-2" />
             <button className="font-bold">Create With AI</button>
           </div>
-          <div className="flex justify-start w-full">
+          <div className="flex justify-start w-[6%]">
             <div
-              className="w-[5%] h-fit  border border-transparent
+              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent
             hover:border-primary hover:border-2
              duration-500 rounded-md"
               onClick={startProject}
             >
               <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
-              <div>start</div>
+              <div>Start</div>
+            </div>
+          </div>
+          <div className="flex justify-start w-[6%]">
+            <div
+              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent
+            hover:border-primary hover:border-2
+             duration-500 rounded-md"
+              onClick={stopProject}
+            >
+              <img src={stopProjectImg} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+              <div>Stop</div>
             </div>
           </div>
         </div>
