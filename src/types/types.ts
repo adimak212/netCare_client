@@ -31,6 +31,8 @@ export interface CanvasComponentProps {
       }[]
     | undefined;
   setConnections: React.Dispatch<React.SetStateAction<Link[] | undefined>>;
+  isProjectRunning: boolean;
+  setIsProjectRunning: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type Project = {

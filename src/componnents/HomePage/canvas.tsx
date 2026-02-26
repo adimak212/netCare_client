@@ -6,6 +6,8 @@ import switchIcon from "@/assets/icons/switch.png";
 import routerIcon from "@/assets/icons/router.png";
 import cloudIcon from "@/assets/icons/cloud.png";
 import useDnd from "@/hooks/useDnd";
+import Gns3Console from "./GNSConsole";
+import DraggableWindow from "./draggableWindow";
 
 const iconMap: Record<string, string> = {
   ethernet_switch: switchIcon,
@@ -20,9 +22,13 @@ export default function Canvas({
   isConnecting,
   setConnections,
   connections,
+  isProjectRunning,
+  setIsProjectRunning,
 }: CanvasComponentProps) {
   const [selectedComponnent, setSelectedComponnent] = useState<string>("");
+  const [consoleGNS, setConsoleGNS] = useState<string>("");
   const [editComponnent, setEditComponnent] = useState<string | null>(null);
+
   const [selectedPort, setSelectedPort] = useState<{
     port: string;
     node_id: string;
@@ -43,11 +49,16 @@ export default function Canvas({
     setTempLine,
     isConnecting,
     tempLine,
+    isProjectRunning,
   );
 
   const actionsClick = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
     e.stopPropagation();
     setSelectedComponnent((prev) => (prev === id! ? "" : id));
+  };
+  const openGNSConsole = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
+    e.stopPropagation();
+    setConsoleGNS((prev) => (prev === id! ? "" : id));
   };
 
   const handleDelete = (id: string) => {
@@ -62,18 +73,14 @@ export default function Canvas({
     });
   };
 
-  const takePort = async (
-    // takenPort: number,
-    // compIndex: number,
-    connectedTo: {
-      port: string;
-      device: Device;
-      node_id: string;
-      port_number: number;
-      index?: number;
-      adapter_number: number;
-    },
-  ) => {
+  const takePort = async (connectedTo: {
+    port: string;
+    device: Device;
+    node_id: string;
+    port_number: number;
+    index?: number;
+    adapter_number: number;
+  }) => {
     if (!selectedPort) {
       setSelectedPort(connectedTo);
       setIsDrowing(true);
@@ -222,6 +229,7 @@ export default function Canvas({
         <div
           className="flex flex-col items-center text-sm relative cursor-pointer w-10 shadow-none"
           onClick={(e) => actionsClick(e, comp.node_id!)}
+          onDoubleClick={(e) => openGNSConsole(e, comp.node_id!)}
           key={comp.node_id}
           draggable
           onDragStart={(e) => onDragStart(e, comp.node_id!)}
@@ -234,7 +242,7 @@ export default function Canvas({
             top: comp.y,
           }}
         >
-          {!isConnecting && selectedComponnent === comp.node_id ? (
+          {!isProjectRunning && !isConnecting && selectedComponnent === comp.node_id ? (
             <div className="absolute top-0 right-[-100px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
               <button
                 className="block w-full text-xs text-left hover:bg-blue-600 rounded px-2 py-1"
@@ -250,7 +258,7 @@ export default function Canvas({
               </button>
             </div>
           ) : null}
-          {isConnecting && selectedComponnent === comp.node_id ? (
+          {!isProjectRunning && isConnecting && selectedComponnent === comp.node_id ? (
             <div className="absolute top-0 right-[-80px] text-white rounded-md border border-blue-500 shadow-md p-2 z-50">
               {comp.ports?.map((port, index) => (
                 <div
@@ -282,6 +290,16 @@ export default function Canvas({
                 </div>
               ))}
             </div>
+          ) : null}
+          {consoleGNS === comp.node_id ? (
+            <DraggableWindow
+              title="R1 Console"
+              width={800}
+              height={500}
+              onClose={() => setConsoleGNS("")}
+            >
+              <Gns3Console host="100.71.52.17" port={comp.console!} />
+            </DraggableWindow>
           ) : null}
           <img
             src={iconMap[comp.node_type!]}

@@ -21,6 +21,7 @@ class Device {
   name?: string;
   template_id?: string;
   status: string = "stopped";
+  console?: number;
 }
 
 class PC extends Device {

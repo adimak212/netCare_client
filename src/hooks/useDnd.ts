@@ -9,6 +9,8 @@ export default function useDnd(
   setTempLine: React.Dispatch<React.SetStateAction<TempLine>>,
   isConnecting: boolean,
   tempLine: TempLine,
+  isProjectRunning: boolean,
+
 ) {
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -75,7 +77,7 @@ export default function useDnd(
   };
 
   const onDrag = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-    if (isConnecting) {
+    if (isConnecting || isProjectRunning) {
       return;
     } else {
       const rect = e.currentTarget.parentElement!.getBoundingClientRect();

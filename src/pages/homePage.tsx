@@ -20,6 +20,7 @@ function homePage() {
   const { id } = useParams<{ id: string }>() || "0";
   const [connections, setConnections] = useState<Link[] | undefined>([]);
   const [inProjectMassege, setinProjectMassege] = useState<string>("Create GNS3 Project");
+  const [isProjectRunning , setIsProjectRunning] = useState<boolean>(false);
   const [popUp, setPopUp] = useState(false);
   useEffect(() => {
     if (!id) {
@@ -113,6 +114,7 @@ function homePage() {
         params: { id },
       });
       console.log(res.data);
+      setIsProjectRunning(true)
       checkNodes();
     } catch (error) {
       console.error("Error start project:", error);
@@ -125,11 +127,12 @@ function homePage() {
         params: { id },
       });
       console.log(res.data);
+      setIsProjectRunning(false)
       checkNodes();
     } catch (error) {
       console.error("Error Stopping project:", error);
     }
-  }
+  };
 
   async function SendComponnents() {
     try {
@@ -188,7 +191,6 @@ function homePage() {
           style: {
             background: "#102235",
             color: "white",
-            //border : "1px solid #1173d4"
           },
         });
       }
@@ -230,8 +232,8 @@ function homePage() {
           </div>
           <div className="flex justify-start w-[6%]">
             <div
-              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent
-            hover:border-primary hover:border-2
+              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent border-#101922
+            hover:border-primary 
              duration-500 rounded-md"
               onClick={startProject}
             >
@@ -241,8 +243,8 @@ function homePage() {
           </div>
           <div className="flex justify-start w-[6%]">
             <div
-              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent
-            hover:border-primary hover:border-2
+              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent border-#101922
+            hover:border-primary
              duration-500 rounded-md"
               onClick={stopProject}
             >
@@ -258,6 +260,8 @@ function homePage() {
           setIsConnecting={setIsConnecting}
           setConnections={setConnections}
           connections={connections}
+          isProjectRunning={isProjectRunning}
+          setIsProjectRunning={setIsProjectRunning}
         />
         <div className="flex justify-around w-full ">
           {!id && (
