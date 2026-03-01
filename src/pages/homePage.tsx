@@ -20,7 +20,7 @@ function homePage() {
   const { id } = useParams<{ id: string }>() || "0";
   const [connections, setConnections] = useState<Link[] | undefined>([]);
   const [inProjectMassege, setinProjectMassege] = useState<string>("Create GNS3 Project");
-  const [isProjectRunning , setIsProjectRunning] = useState<boolean>(false);
+  const [isProjectRunning, setIsProjectRunning] = useState<boolean>(false);
   const [popUp, setPopUp] = useState(false);
   useEffect(() => {
     if (!id) {
@@ -61,7 +61,6 @@ function homePage() {
         setCanvasComponents(finalDevices);
         console.log(links.data);
         setConnections(links.data);
-        openProject();
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
@@ -78,8 +77,9 @@ function homePage() {
       }
     };
 
-    fetchNodes();
     openProject();
+    fetchNodes();
+
     console.log(id);
   }, [id]);
 
@@ -114,7 +114,7 @@ function homePage() {
         params: { id },
       });
       console.log(res.data);
-      setIsProjectRunning(true)
+      setIsProjectRunning(true);
       checkNodes();
     } catch (error) {
       console.error("Error start project:", error);
@@ -127,7 +127,7 @@ function homePage() {
         params: { id },
       });
       console.log(res.data);
-      setIsProjectRunning(false)
+      setIsProjectRunning(false);
       checkNodes();
     } catch (error) {
       console.error("Error Stopping project:", error);
@@ -221,10 +221,10 @@ function homePage() {
         </div>
         <div className="w-[1px] h-90vh bg-primary bg-opacity-20"></div>
       </div>
-      <div className="flex-1 flex flex-col items-center">
-        <div className="flex w-full items-center">
+      <div className="flex-1  flex flex-col items-center">
+        <div className="flex w-full items-center h-[12%]">
           <div
-            className="flex bg-primary rounded-md w-[15%] h-[60%] items-center justify-center mr-3 cursor-pointer"
+            className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"
             onClick={() => setPopUp(true)}
           >
             <img src={AI} className="w-[15%] mr-2" />
@@ -232,7 +232,7 @@ function homePage() {
           </div>
           <div className="flex justify-start w-[6%]">
             <div
-              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent border-#101922
+              className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
             hover:border-primary 
              duration-500 rounded-md"
               onClick={startProject}
@@ -243,7 +243,7 @@ function homePage() {
           </div>
           <div className="flex justify-start w-[6%]">
             <div
-              className="flex flex-col items-center justify-center w-full h-fit  border border-transparent border-#101922
+              className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
             hover:border-primary
              duration-500 rounded-md"
               onClick={stopProject}
@@ -261,7 +261,6 @@ function homePage() {
           setConnections={setConnections}
           connections={connections}
           isProjectRunning={isProjectRunning}
-          setIsProjectRunning={setIsProjectRunning}
         />
         <div className="flex justify-around w-full ">
           {!id && (

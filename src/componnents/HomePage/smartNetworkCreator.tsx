@@ -63,7 +63,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
       responseInfo: topoPick!.normalized,
     });
     setPage(3);
-    console.log(result.nodes, result.links);
+    console.log(result.links);
   };
   const onCreateProject = async () => {
     const result = await createProject({

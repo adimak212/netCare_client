@@ -22,8 +22,7 @@ export default function Canvas({
   isConnecting,
   setConnections,
   connections,
-  isProjectRunning,
-  setIsProjectRunning,
+  isProjectRunning
 }: CanvasComponentProps) {
   const [selectedComponnent, setSelectedComponnent] = useState<string>("");
   const [consoleGNS, setConsoleGNS] = useState<string>("");
@@ -208,7 +207,7 @@ export default function Canvas({
 
   return (
     <div
-      className="w-full h-[530px] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
+      className="w-full h-[78%] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
       onDrop={onDrop}
       onDragOver={onDragOver}
       onClick={() => {
@@ -293,7 +292,7 @@ export default function Canvas({
           ) : null}
           {consoleGNS === comp.node_id ? (
             <DraggableWindow
-              title="R1 Console"
+              title={comp.name!}
               width={800}
               height={500}
               onClose={() => setConsoleGNS("")}
