@@ -26,6 +26,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
   const [page, setPage] = useState(0);
   const [ProjectName, setProjectName] = useState("");
   const [topoPick, setTopoPick] = useState<Rank | null>();
+  const [errors, setErrors] = useState("");
   const { mutateAsync, data } = useRunAlgorithm();
   const {
     mutateAsync: createNodesMutate,
@@ -66,21 +67,26 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
     console.log(result.links);
   };
   const onCreateProject = async () => {
-    const result = await createProject({
-      canvasComponents: canvasComponents,
-      connections: connections,
-      ProjectName: ProjectName,
-    });
-    setPopUp(false);
-    //console.log(result);
-    toast.success("project created :)", {
-      duration: 1500,
-      style: {
-        background: "#102235",
-        color: "white",
-      },
-    });
-    navigate(`/${result.project_id}`);
+    try {
+      const result = await createProject({
+        canvasComponents: canvasComponents,
+        connections: connections,
+        ProjectName: ProjectName,
+      });
+      console.log(result);
+      setPopUp(false);
+      toast.success("project created :)", {
+        duration: 1500,
+        style: {
+          background: "#102235",
+          color: "white",
+        },
+      });
+      navigate(`/${result!.project_id}`);
+    } catch (error: any) {
+      console.log(error.response.data.error);
+      setErrors(error.response.data.error);
+    }
   };
   const ranks = data?.ranks ?? [];
   const canvasComponents = nodesData?.nodes ?? [];
@@ -104,7 +110,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
         </div>
         {page == 0 && (
           <>
-            <div className="flex flex-col justify-center items-center h-[70%]">
+            <div className="flex flex-col justify-center items-center h-[80%]">
               <div className="font-extrabold text-xl mb-3">Smart network Generator</div>
               {Requirements.map((req) => {
                 const key = reqToKey[req];
@@ -118,7 +124,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
                       inputMode="numeric"
                       maxLength={3}
                       pattern="[0-9]*"
-                      value={inpValue === 0 ? "" : String(inpValue)}
+                      value={inpValue}
                       onChange={(e) => {
                         const raw = e.target.value.replace(/[^0-9]/g, "");
                         if (raw === "") {
@@ -135,7 +141,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
               })}
               <div className="font-bold mt-3"> All Parameters Must Be Between 0 - 100</div>
               <button
-                className="bg-primary rounded-md w-[70%] h-[13%] mt-5 font-bold"
+                className="bg-primary rounded-md w-[70%] h-[10%] mt-5 font-bold"
                 onClick={() => generteTopology()}
               >
                 Generte Topology Ranks
@@ -193,15 +199,16 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
           </>
         )}
         {page == 3 && (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center justify-start h-[80%] mt-5">
             <span className="font-extrabold text-xl mb-3">Choose Project Name: </span>
             <input
               type="text"
-              className="text-black ml-2"
+              className="text-center text-black w=[40%] rounded"
               onChange={(e) => setProjectName(e.target.value)}
             />
+            <div className={`w-[80%] text-red-700 text-sm mt-${errors != "" ? "0" : "2"}`}>{errors}</div>
             <button
-              className="bg-primary rounded-md w-[70%] h-[13%] mt-10 font-bold mb-10"
+              className={`bg-primary rounded-md w-[70%] h-[10%] font-bold mb-5 mt-${errors != "" ? "2" : "5"}`}
               onClick={() => onCreateProject()}
             >
               Create Project

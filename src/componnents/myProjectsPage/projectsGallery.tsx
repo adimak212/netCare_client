@@ -5,9 +5,12 @@ import Swal from "sweetalert2";
 import projectIcon from "@/assets/icons/project.png";
 import deleteIcon from "@/assets/icons/delete.png";
 import { useNavigate } from "react-router-dom";
+import { LoadingOverlay } from "../Loading/LoadingOverlay";
 
 function projectGallery() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [toDel , setToDel] = useState<string>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +25,7 @@ function projectGallery() {
   }, []);
 
   const deleteProject = async (id: string, name: string) => {
+    setToDel(id);
     const result = await Swal.fire({
       title: "Are you sure?",
       text: `Confirm deletion of ${name} ? `,
@@ -35,9 +39,10 @@ function projectGallery() {
     });
 
     if (result.isConfirmed) {
+      setIsLoading(true);
       await axios.get("http://localhost:3000/v1/projects/deleteProject", { params: { id } });
       setProjects(projects.filter((a) => a.project_id != id));
-
+      setIsLoading(false);
       Swal.fire({
         title: "Deleted!",
         text: "Your Project has been deleted",
@@ -74,6 +79,7 @@ function projectGallery() {
               <img className="h-10 w-10" src={projectIcon} alt="proj" />
               <div className="font-bold text-white mt-3">{proj.name}</div>
             </div>
+            {proj.project_id == toDel && <LoadingOverlay loading={true} massege={`Deleting Project: ${proj.name}`}/>}
           </div>
         ))
       ) : (
