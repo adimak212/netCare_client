@@ -38,6 +38,8 @@ function homePage() {
         const links = await axios.get<Link[]>("http://localhost:3000/v1/projects/getProjectLinks", {
           params: { id },
         });
+
+        console.log(devices);
         const finalDevices = devices.data.map((device) => ({
           ...device,
           ports: device.ports?.map((port) => {
@@ -113,6 +115,9 @@ function homePage() {
       const res = await axios.post("http://localhost:3000/v1/projects/startProject", {
         params: { id },
       });
+      setTimeout(() => {
+        console.log("hey");
+      } , 2000);
       console.log(res.data);
       setIsProjectRunning(true);
       checkNodes();
@@ -199,7 +204,7 @@ function homePage() {
     }
   };
   return (
-    <div className="w-[95%] mx-auto flex gap-10">
+    <div className="w-[95vw] mx-auto flex gap-10">
       <div className="mt-1 flex gap-6 h-[90vh]">
         <div>
           <div className="flex flex-col relative py-6 ">
@@ -221,7 +226,7 @@ function homePage() {
         </div>
         <div className="w-[1px] h-90vh bg-primary bg-opacity-20"></div>
       </div>
-      <div className="flex-1  flex flex-col items-center">
+      <div className="flex-1 w-[100%] flex flex-col items-center">
         <div className="flex w-full items-center h-[12%]">
           <div
             className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"

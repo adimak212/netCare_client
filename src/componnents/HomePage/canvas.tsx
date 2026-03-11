@@ -72,6 +72,13 @@ export default function Canvas({
     });
   };
 
+  const typeToImg = (slot1: string , node_type: string) => {
+      if (node_type === "dynamips" && slot1 && slot1 === "NM-16ESW"){
+        return switchIcon
+      }
+      return iconMap[node_type];
+  }
+
   const takePort = async (connectedTo: {
     port: string;
     device: Device;
@@ -160,7 +167,6 @@ export default function Canvas({
     pt.x = e.clientX;
     pt.y = e.clientY;
     const cursor = pt.matrixTransform(svgRect.getScreenCTM()?.inverse());
-    //console.log(e);
     setTempLine({ ...tempLine, x2: cursor.x, y2: cursor.y });
   };
 
@@ -301,7 +307,7 @@ export default function Canvas({
             </DraggableWindow>
           ) : null}
           <img
-            src={iconMap[comp.node_type!]}
+            src={typeToImg(comp.slot1! , comp.node_type!)}
             alt={`${comp.node_type} ${comp.modelType}`}
             className="w-10 rounded-md bg-primary p-2 bg-opacity-20 z-50"
           />
