@@ -6,16 +6,21 @@ import projectIcon from "@/assets/icons/project.png";
 import deleteIcon from "@/assets/icons/delete.png";
 import { useNavigate } from "react-router-dom";
 import { LoadingOverlay } from "../Loading/LoadingOverlay";
+import NavBar from "../NavBar/NavBar";
+import { useContext } from "react";
+import { UserContext } from "../../context/UserContext";
 
 function projectGallery() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [toDel , setToDel] = useState<string>();
+  const [toDel, setToDel] = useState<string>();
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     try {
-      axios.get<Project[]>("http://localhost:3000/v1/projects/getAllProjects").then((response) => {
+      console.log(user)
+        axios.get<Project[]>("http://localhost:3000/v1/projects/getProjectsByUser", {params: {owner_id: user?._id}}).then((response) => {
         console.log(response.data);
         setProjects(response.data.sort((a, b) => a.name.localeCompare(b.name)));
       });
@@ -54,50 +59,55 @@ function projectGallery() {
     }
   };
   const handlePick = async (id: string) => {
-    navigate(`/${id}`);
+    navigate(`/project/${id}`);
   };
 
   return (
-    <div className="w-11/12 h-[80%] flex justify-center items-center flex-wrap relative overflow-auto">
-      {projects.length > 0 ? (
-        projects.map((proj) => (
-          <div
-            key={proj.project_id}
-            className="m-5 bg-background w-40 h-32 rounded-md cursor-pointer z-[50]"
-            onClick={() => handlePick(proj.project_id)}
-          >
-            <img
-              src={deleteIcon}
-              alt="delete icon"
-              className="w-[25px] h-fit m-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteProject(proj.project_id, proj.name);
-              }}
-            />
-            <div className="flex justify-center items-center flex-col">
-              <img className="h-10 w-10" src={projectIcon} alt="proj" />
-              <div className="font-bold text-white mt-3">{proj.name}</div>
-            </div>
-            {proj.project_id == toDel && <LoadingOverlay loading={true} massege={`Deleting Project: ${proj.name}`}/>}
-          </div>
-        ))
-      ) : (
-        <>
-          <div className="flex justify-center items-center flex-col">
-            <div>You Don't Have Any Projects</div>
-            <div className="opacity-50 text-sm">
-              Start building your network topology by click button
-            </div>
-            <button
-              className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
-              onClick={() => navigate(`/`)}
+    <div>
+      <NavBar />
+      <div className="w-[50vw] h-[80%] flex justify-center items-center flex-wrap relative overflow-auto">
+        {projects.length > 0 ? (
+          projects.map((proj) => (
+            <div
+              key={proj.project_id}
+              className="m-5 bg-background w-40 h-32 rounded-md cursor-pointer z-[50]"
+              onClick={() => handlePick(proj.project_id)}
             >
-              New Project +
-            </button>
-          </div>
-        </>
-      )}
+              <img
+                src={deleteIcon}
+                alt="delete icon"
+                className="w-[25px] h-fit m-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteProject(proj.project_id, proj.name);
+                }}
+              />
+              <div className="flex justify-center items-center flex-col">
+                <img className="h-10 w-10" src={projectIcon} alt="proj" />
+                <div className="font-bold text-white mt-3">{proj.name}</div>
+              </div>
+              {proj.project_id == toDel && (
+                <LoadingOverlay loading={true} massege={`Deleting Project: ${proj.name}`} />
+              )}
+            </div>
+          ))
+        ) : (
+          <>
+            <div className="flex justify-center items-center flex-col">
+              <div>You Don't Have Any Projects</div>
+              <div className="opacity-50 text-sm">
+                Start building your network topology by click button
+              </div>
+              <button
+                className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
+                onClick={() => navigate(`/newProject`)}
+              >
+                New Project +
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

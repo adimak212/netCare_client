@@ -14,6 +14,7 @@ const iconMap: Record<string, string> = {
   dynamips: routerIcon,
   vpcs: pcIcon,
   cloud: cloudIcon,
+  cicso_switch: switchIcon
 };
 
 export default function Canvas({

@@ -10,6 +10,7 @@ type CreateNodesVars = {
 export function useCreateNodes() {
   return useMutation({
     mutationFn: async ({ topoPick, responseInfo }: CreateNodesVars) => {
+      console.log(responseInfo)
       const res = await axios.get<CreateNodesResponse>(
         "http://localhost:3000/v1/algorithm/runAlgorithm",
         {

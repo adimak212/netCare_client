@@ -1,4 +1,4 @@
-import { useState, type SetStateAction } from "react";
+import { useContext, useState, type SetStateAction } from "react";
 import closeIcon from "@/assets/icons/close.png";
 import { Requirements } from "@/config/topologiesDevices.js";
 import { OrbitProgress } from "react-loading-indicators";
@@ -9,7 +9,7 @@ import { useCreatProject } from "@/hooks/useCreatProject.js";
 import toast from "react-hot-toast";
 import type { Device } from "@/classes/Device.js";
 import { useNavigate } from "react-router-dom";
-
+import { UserContext } from "@/context/UserContext";
 type Props = {
   setPopUp: React.Dispatch<React.SetStateAction<boolean>>;
   setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>;
@@ -41,6 +41,8 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
     redundancy: 0,
     cost: 0,
   });
+  const userLocal = JSON.parse(localStorage.getItem("user") || "null");
+  const { user, setUser } = useContext(UserContext);
 
   const setField = (key: keyof AlgorithmInputs, value: number) => {
     setInputs((prev) => ({ ...prev, [key]: value }));
@@ -72,6 +74,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
         canvasComponents: canvasComponents,
         connections: connections,
         ProjectName: ProjectName,
+        owner_id: (userLocal) ? userLocal._id: user?._id
       });
       console.log(result);
       setPopUp(false);
@@ -82,7 +85,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
           color: "white",
         },
       });
-      navigate(`/${result!.project_id}`);
+      navigate(`/project/${result!.project_id}`);
     } catch (error: any) {
       console.log(error.response.data.error);
       setErrors(error.response.data.error);
@@ -206,7 +209,9 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
               className="text-center text-black w=[40%] rounded"
               onChange={(e) => setProjectName(e.target.value)}
             />
-            <div className={`w-[80%] text-red-700 text-sm mt-${errors != "" ? "0" : "2"}`}>{errors}</div>
+            <div className={`w-[80%] text-red-700 text-sm mt-${errors != "" ? "0" : "2"}`}>
+              {errors}
+            </div>
             <button
               className={`bg-primary rounded-md w-[70%] h-[10%] font-bold mb-5 mt-${errors != "" ? "2" : "5"}`}
               onClick={() => onCreateProject()}

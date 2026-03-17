@@ -5,53 +5,29 @@ import MyProjectsPage from "./pages/myProjectsPage";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import Login from "./pages/LoginPage";
+import SignUpPage from "./pages/signUpPage";
+import { UserProvider } from "./context/UserContext";
 const queryClient = new QueryClient();
-
-function NavBar() {
-  const location = useLocation();
-
-  return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-3 bg-gray-800 text-white shadow-md">
-      <h1 className="text-xl font-bold">NetCare</h1>
-      <div className="flex gap-4">
-        <Link
-          to="/"
-          className={`px-3 py-2 rounded transition ${
-            location.pathname === "/" ? "bg-gray-700" : "hover:bg-gray-700"
-          }`}
-        >
-          New Project
-        </Link>
-
-        <Link
-          to="/projects"
-          className={`px-3 py-2 rounded transition ${
-            location.pathname === "/projects" ? "bg-gray-700" : "hover:bg-gray-700"
-          }`}
-        >
-          My Projects
-        </Link>
-      </div>
-    </nav>
-  );
-}
 
 export default function App() {
   return (
     <DndProvider backend={HTML5Backend}>
       <QueryClientProvider client={queryClient}>
+        <UserProvider>
         <Router>
-          <NavBar />
           <div className="pt-16">
             <Toaster position="top-right" />
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<Login />} />
+              <Route path="/signup" element ={<SignUpPage />} />
+              <Route path="/newProject" element={<HomePage />} />
               <Route path="/projects" element={<MyProjectsPage />} />
-              <Route path="/:id" element={<HomePage />} />
+              <Route path="/project/:id" element={<HomePage />} />
             </Routes>
           </div>
         </Router>
+        </UserProvider>
       </QueryClientProvider>
     </DndProvider>
   );

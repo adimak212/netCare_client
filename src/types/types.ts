@@ -94,7 +94,8 @@ export type CreateNodesResponse = {
 export type CreatProjectParams = {
   canvasComponents: Device[];
   ProjectName: string;
-  connections: Link[];
+  connections: Link[] | undefined;
+  owner_id: string;
 };
 
 export type CreatProjectResponse = {

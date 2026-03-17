@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Canvas from "@/componnents/HomePage/canvas.js";
 import { SideBar } from "@/componnents/HomePage/sideBar.js";
 import axios from "axios";
@@ -11,6 +11,9 @@ import playProject from "@/assets/icons/playProject.png";
 import stopProjectImg from "@/assets/icons/stopProject.png";
 import AI from "@/assets/icons/AI.png";
 import SmartNetworkTopology from "@/componnents/HomePage/smartNetworkCreator.tsx";
+import NavBar from "@/componnents/NavBar/NavBar";
+import { UserContext } from "@/context/UserContext";
+import { useCreatProject } from "@/hooks/useCreatProject";
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -22,6 +25,10 @@ function homePage() {
   const [inProjectMassege, setinProjectMassege] = useState<string>("Create GNS3 Project");
   const [isProjectRunning, setIsProjectRunning] = useState<boolean>(false);
   const [popUp, setPopUp] = useState(false);
+  const userLocal = JSON.parse(localStorage.getItem("user") || "null");
+  const { user, setUser } = useContext(UserContext);
+  const { mutateAsync: createProject, isPending: isPendingProject } = useCreatProject();
+  
   useEffect(() => {
     if (!id) {
       setCanvasComponents([]);
@@ -141,10 +148,12 @@ function homePage() {
 
   async function SendComponnents() {
     try {
-      await axios.post("http://localhost:3000/v1/projects/createProject", {
-        canvasComponents,
-        ProjectName,
-        connections,
+      console.log(userLocal);
+      const result = await createProject({
+        canvasComponents: canvasComponents,
+        connections: connections,
+        ProjectName: ProjectName,
+        owner_id: userLocal ? userLocal._id : user?._id,
       });
       toast.success("project created :)", {
         duration: 1500,
@@ -161,7 +170,6 @@ function homePage() {
         style: {
           background: "#102235",
           color: "white",
-          //border : "1px solid #1173d4"
         },
       });
       console.log(error);
@@ -237,61 +245,86 @@ function homePage() {
           </div>
           <div className="flex justify-start w-[6%]">
             <div
-              className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
-            hover:border-primary 
-             duration-500 rounded-md"
-              onClick={startProject}
+              className="flex items-center gap-4 bg-background py-4 pr-6 pl-3 rounded-md w-56 mt-4 cursor-pointer"
+              onClick={handaleConnectClick}
             >
-              <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
-              <div>Start</div>
+              <img
+                src={WireImg}
+                alt="wire_icon"
+                className="w-10 rounded-md bg-primary p-2 bg-opacity-20"
+              />
+              {connectMassege}
             </div>
           </div>
-          <div className="flex justify-start w-[6%]">
+          <div className="w-[1px] h-90vh bg-primary bg-opacity-20"></div>
+        </div>
+        <div className="flex-1  flex flex-col items-center">
+          <div className="flex w-full items-center h-[12%]">
             <div
-              className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
-            hover:border-primary
-             duration-500 rounded-md"
-              onClick={stopProject}
+              className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"
+              onClick={() => setPopUp(true)}
             >
-              <img src={stopProjectImg} alt="Play Project" className="w-[70%] h-fit opacity-75" />
-              <div>Stop</div>
+              <img src={AI} className="w-[15%] mr-2" />
+              <button className="font-bold">Create With AI</button>
+            </div>
+            <div className="flex justify-start w-[6%]">
+              <div
+                className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
+              hover:border-primary 
+              duration-500 rounded-md"
+                onClick={startProject}
+              >
+                <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+                <div>Start</div>
+              </div>
+            </div>
+            <div className="flex justify-start w-[6%]">
+              <div
+                className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
+              hover:border-primary
+              duration-500 rounded-md"
+                onClick={stopProject}
+              >
+                <img src={stopProjectImg} alt="Play Project" className="w-[70%] h-fit opacity-75" />
+                <div>Stop</div>
+              </div>
             </div>
           </div>
+          <Canvas
+            canvasComponents={canvasComponents}
+            setCanvasComponents={setCanvasComponents}
+            isConnecting={isConnecting}
+            setIsConnecting={setIsConnecting}
+            setConnections={setConnections}
+            connections={connections}
+            isProjectRunning={isProjectRunning}
+          />
+          <div className="flex justify-around w-full ">
+            {!id && (
+              <input
+                className="bg-transparent focus-within:outline-none w-1/2 h-10 rounded-md mr-3 mt-3 px-4 border-[1px] border-primary border-opacity-20 placeholder:text-white placeholder:opacity-60"
+                type="text"
+                placeholder="Project Name"
+                value={ProjectName}
+                onChange={(event) => setProjectName(event.target.value)}
+              />
+            )}
+            <button
+              className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
+              onClick={id ? updateProject : SendComponnents}
+            >
+              {inProjectMassege}
+            </button>
+          </div>
         </div>
-        <Canvas
-          canvasComponents={canvasComponents}
-          setCanvasComponents={setCanvasComponents}
-          isConnecting={isConnecting}
-          setIsConnecting={setIsConnecting}
-          setConnections={setConnections}
-          connections={connections}
-          isProjectRunning={isProjectRunning}
-        />
-        <div className="flex justify-around w-full ">
-          {!id && (
-            <input
-              className="bg-transparent focus-within:outline-none w-1/2 h-10 rounded-md mr-3 mt-3 px-4 border-[1px] border-primary border-opacity-20 placeholder:text-white placeholder:opacity-60"
-              type="text"
-              placeholder="Project Name"
-              value={ProjectName}
-              onChange={(event) => setProjectName(event.target.value)}
-            />
-          )}
-          <button
-            className="bg-primary rounded-md w-1/2 h-10 mt-3 font-bold"
-            onClick={id ? updateProject : SendComponnents}
-          >
-            {inProjectMassege}
-          </button>
-        </div>
+        {popUp && (
+          <SmartNetworkTopology
+            setPopUp={setPopUp}
+            setCanvasComponents={setCanvasComponents}
+            setConnections={setConnections}
+          />
+        )}
       </div>
-      {popUp && (
-        <SmartNetworkTopology
-          setPopUp={setPopUp}
-          setCanvasComponents={setCanvasComponents}
-          setConnections={setConnections}
-        />
-      )}
     </div>
   );
 }
