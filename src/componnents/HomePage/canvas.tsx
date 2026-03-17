@@ -214,7 +214,7 @@ export default function Canvas({
 
   return (
     <div
-      className="w-full h-[78%] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
+      className="w-full h-[80%] mx-auto border-[2px] border-primary  rounded-md relative overflow-auto border-dotted flex justify-center items-center flex-col"
       onDrop={onDrop}
       onDragOver={onDragOver}
       onClick={() => {

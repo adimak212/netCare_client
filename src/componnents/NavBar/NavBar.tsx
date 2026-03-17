@@ -1,5 +1,5 @@
 import { BrowserRouter as Routes, Route, Link, useLocation } from "react-router-dom";
-import profileImg from "@/assets/icons/profile.png";
+import profileImg from "@/assets/icons/icons8-profile-100.png"
 import { useState, useContext } from "react";
 import { UserContext } from "../../context/UserContext";
 

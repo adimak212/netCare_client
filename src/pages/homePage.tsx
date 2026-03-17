@@ -28,7 +28,7 @@ function homePage() {
   const userLocal = JSON.parse(localStorage.getItem("user") || "null");
   const { user, setUser } = useContext(UserContext);
   const { mutateAsync: createProject, isPending: isPendingProject } = useCreatProject();
-  
+
   useEffect(() => {
     if (!id) {
       setCanvasComponents([]);
@@ -124,7 +124,7 @@ function homePage() {
       });
       setTimeout(() => {
         console.log("hey");
-      } , 2000);
+      }, 2000);
       console.log(res.data);
       setIsProjectRunning(true);
       checkNodes();
@@ -212,38 +212,16 @@ function homePage() {
     }
   };
   return (
-    <div className="w-[95vw] mx-auto flex gap-10">
-      <div className="mt-1 flex gap-6 h-[90vh]">
-        <div>
-          <div className="flex flex-col relative py-6 ">
-            <span className="font-bold text-2xl">Components</span>
-            <SideBar />
-          </div>
-          <div className="w-full h-[1px] bg-primary bg-opacity-20"></div>
-          <div
-            className="flex items-center gap-4 bg-background py-4 pr-6 pl-3 rounded-md w-56 mt-4 cursor-pointer"
-            onClick={handaleConnectClick}
-          >
-            <img
-              src={WireImg}
-              alt="wire_icon"
-              className="w-10 rounded-md bg-primary p-2 bg-opacity-20"
-            />
-            {connectMassege}
-          </div>
-        </div>
-        <div className="w-[1px] h-90vh bg-primary bg-opacity-20"></div>
-      </div>
-      <div className="flex-1 w-[100%] flex flex-col items-center">
-        <div className="flex w-full items-center h-[12%]">
-          <div
-            className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"
-            onClick={() => setPopUp(true)}
-          >
-            <img src={AI} className="w-[15%] mr-2" />
-            <button className="font-bold">Create With AI</button>
-          </div>
-          <div className="flex justify-start w-[6%]">
+    <div>
+      <NavBar />
+      <div className="w-[95%] mx-auto flex gap-10">
+        <div className="mt-1 flex gap-6 h-[90vh]">
+          <div>
+            <div className="flex flex-col relative py-6 ">
+              <span className="font-bold text-2xl">Components</span>
+              <SideBar />
+            </div>
+            <div className="w-full h-[1px] bg-primary bg-opacity-20"></div>
             <div
               className="flex items-center gap-4 bg-background py-4 pr-6 pl-3 rounded-md w-56 mt-4 cursor-pointer"
               onClick={handaleConnectClick}
@@ -258,8 +236,8 @@ function homePage() {
           </div>
           <div className="w-[1px] h-90vh bg-primary bg-opacity-20"></div>
         </div>
-        <div className="flex-1  flex flex-col items-center">
-          <div className="flex w-full items-center h-[12%]">
+        <div className="flex-1 flex flex-col items-center">
+          <div className="flex w-full h-24 items-center">
             <div
               className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"
               onClick={() => setPopUp(true)}
@@ -269,9 +247,9 @@ function homePage() {
             </div>
             <div className="flex justify-start w-[6%]">
               <div
-                className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
-              hover:border-primary 
-              duration-500 rounded-md"
+                className="flex flex-col items-center justify-center w-[70%] h-fit  border border-transparent
+            hover:border-primary hover:border-2
+             duration-500 rounded-md"
                 onClick={startProject}
               >
                 <img src={playProject} alt="Play Project" className="w-[70%] h-fit opacity-75" />
@@ -280,9 +258,9 @@ function homePage() {
             </div>
             <div className="flex justify-start w-[6%]">
               <div
-                className="flex flex-col items-center justify-center w-[80%] h-fit  border border-transparent border-#101922
-              hover:border-primary
-              duration-500 rounded-md"
+                className="flex flex-col items-center justify-center w-[70%] h-fit  border border-transparent
+            hover:border-primary hover:border-2
+             duration-500 rounded-md"
                 onClick={stopProject}
               >
                 <img src={stopProjectImg} alt="Play Project" className="w-[70%] h-fit opacity-75" />
@@ -297,7 +275,7 @@ function homePage() {
             setIsConnecting={setIsConnecting}
             setConnections={setConnections}
             connections={connections}
-            isProjectRunning={isProjectRunning}
+            isProjectRunning = {isProjectRunning}
           />
           <div className="flex justify-around w-full ">
             {!id && (
