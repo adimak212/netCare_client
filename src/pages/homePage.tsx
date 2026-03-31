@@ -42,6 +42,7 @@ function homePage() {
           "http://localhost:3000/v1/projects/getProjectNodes",
           { params: { id } },
         );
+        
         const links = await axios.get<Link[]>("http://localhost:3000/v1/projects/getProjectLinks", {
           params: { id },
         });

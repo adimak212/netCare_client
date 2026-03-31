@@ -9,9 +9,8 @@ class Device {
   icon?: string;
   x?: number;
   y?: number;
-  node_type?: "ethernet_switch" | "dynamips" | "vpcs" | "cloud" | "cisco_switch";
+  node_type?: "ethernet_switch" | "dynamips" | "vpcs" | "cloud" | "cisco_switch" | "qemu";
   ports?: {
-    link_type: string;
     port_number: number;
     short_name: string;
     adapter_number: number;
@@ -36,7 +35,6 @@ class PC extends Device {
     this.node_type = "vpcs";
     this.ports = [
       {
-        link_type: "ethernet",
         port_number: 0,
         short_name: "e0",
         adapter_number: 0,
@@ -57,7 +55,6 @@ class Switch extends Device {
     x: number,
     y: number,
     ports?: {
-      link_type: string;
       port_number: number;
       short_name: string;
       adapter_number: number;
@@ -71,11 +68,10 @@ class Switch extends Device {
     this.icon = switchIcon;
     this.node_id = id;
     this.modelType = modelType;
-    this.node_type = "dynamips";
+    this.node_type = "qemu";
     this.ports = ports;
     this.name = "Switch";
-    this.template_id = "1966b864-93e7-32d5-965f-001384eec461";
-    this.slot1 = "NM-16ESW";
+    this.template_id = "96ff8c08-2f4c-4dc5-bfa6-79849810c400";
   }
 }
 
@@ -86,7 +82,6 @@ class Router extends Device {
     x: number,
     y: number,
     ports?: {
-      link_type: string;
       port_number: number;
       short_name: string;
       adapter_number: number;
@@ -116,7 +111,6 @@ class Cloud extends Device {
     this.node_id = id;
     this.ports = [
       {
-        link_type: "ethernet",
         port_number: 0,
         short_name: "Etherner 2",
         adapter_number: 0,

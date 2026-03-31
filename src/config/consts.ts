@@ -5,7 +5,6 @@ export const models = {
 export const ModelToPorts: Record<
   string,
   {
-    link_type: string;
     port_number: number;
     adapter_number: number;
     short_name: string;
@@ -14,154 +13,32 @@ export const ModelToPorts: Record<
   }[]
 > = {
   "3600": [
-    {
-      link_type: "ethernet",
-      port_number: 0,
-      adapter_number: 0,
-      short_name: "f0/0",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 1,
-      adapter_number: 0,
-      short_name: "f0/1",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 0,
-      adapter_number: 1,
-      short_name: "f1/0",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 1,
-      adapter_number: 1,
-      short_name: "f1/1",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 2,
-      adapter_number: 1,
-      short_name: "f1/2",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 3,
-      adapter_number: 1,
-      short_name: "f1/3",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 4,
-      adapter_number: 1,
-      short_name: "f1/4",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 5,
-      adapter_number: 1,
-      short_name: "f1/5",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 6,
-      adapter_number: 1,
-      short_name: "f1/6",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 7,
-      adapter_number: 1,
-      short_name: "f1/7",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 8,
-      adapter_number: 1,
-      short_name: "f1/8",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 9,
-      adapter_number: 1,
-      short_name: "f1/9",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 10,
-      adapter_number: 1,
-      short_name: "f1/10",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 11,
-      adapter_number: 1,
-      short_name: "f1/11",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 12,
-      adapter_number: 1,
-      short_name: "f1/12",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 13,
-      adapter_number: 1,
-      short_name: "f1/13",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 14,
-      adapter_number: 1,
-      short_name: "f1/14",
-      isTaken: false,
-      isOn: false,
-    },
-    {
-      link_type: "ethernet",
-      port_number: 15,
-      adapter_number: 1,
-      short_name: "f1/15",
-      isTaken: false,
-      isOn: false,
-    },
-  ],
+  // Gi0
+      { adapter_number: 0, port_number: 0, short_name: "Gi0/0", isTaken: false, isOn: false },
+      { adapter_number: 1, port_number: 0, short_name: "Gi0/1", isTaken: false, isOn: false },
+      { adapter_number: 2, port_number: 0, short_name: "Gi0/2", isTaken: false, isOn: false },
+      { adapter_number: 3, port_number: 0, short_name: "Gi0/3", isTaken: false, isOn: false },
+
+      // Gi1
+      { adapter_number: 4, port_number: 0, short_name: "Gi1/0", isTaken: false, isOn: false },
+      { adapter_number: 5, port_number: 0, short_name: "Gi1/1", isTaken: false, isOn: false },
+      { adapter_number: 6, port_number: 0, short_name: "Gi1/2", isTaken: false, isOn: false },
+      { adapter_number: 7, port_number: 0, short_name: "Gi1/3", isTaken: false, isOn: false },
+
+      // Gi2
+      { adapter_number: 8, port_number: 0, short_name: "Gi2/0", isTaken: false, isOn: false },
+      { adapter_number: 9, port_number: 0, short_name: "Gi2/1", isTaken: false, isOn: false },
+      { adapter_number: 10, port_number: 0, short_name: "Gi2/2", isTaken: false, isOn: false },
+      { adapter_number: 11, port_number: 0, short_name: "Gi2/3", isTaken: false, isOn: false },
+
+      // Gi3
+      { adapter_number: 12, port_number: 0, short_name: "Gi3/0", isTaken: false, isOn: false },
+      { adapter_number: 13, port_number: 0, short_name: "Gi3/1", isTaken: false, isOn: false },
+      { adapter_number: 14, port_number: 0, short_name: "Gi3/2", isTaken: false, isOn: false },
+      { adapter_number: 15, port_number: 0, short_name: "Gi3/3", isTaken: false, isOn: false },
+    ] ,
   c7200: [
     {
-      link_type: "ethernet",
       port_number: 0,
       adapter_number: 0,
       short_name: "f0/0",
@@ -169,7 +46,6 @@ export const ModelToPorts: Record<
       isOn: false,
     },
     {
-      link_type: "serial",
       port_number: 0,
       adapter_number: 1,
       short_name: "s1/0",
@@ -177,7 +53,6 @@ export const ModelToPorts: Record<
       isOn: false,
     },
     {
-      link_type: "serial",
       port_number: 1,
       adapter_number: 1,
       short_name: "s1/1",
@@ -185,7 +60,6 @@ export const ModelToPorts: Record<
       isOn: false,
     },
     {
-      link_type: "serial",
       port_number: 2,
       adapter_number: 1,
       short_name: "s1/2",
@@ -193,7 +67,6 @@ export const ModelToPorts: Record<
       isOn: false,
     },
     {
-      link_type: "serial",
       port_number: 3,
       adapter_number: 1,
       short_name: "s1/3",
@@ -201,7 +74,6 @@ export const ModelToPorts: Record<
       isOn: false,
     },
     {
-      link_type: "ethernet",
       port_number: 0,
       adapter_number: 2,
       short_name: "f2/0",
@@ -209,7 +81,6 @@ export const ModelToPorts: Record<
       isOn: false,
     },
     {
-      link_type: "ethernet",
       port_number: 1,
       adapter_number: 2,
       short_name: "f2/1",

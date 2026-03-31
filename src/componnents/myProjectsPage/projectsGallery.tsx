@@ -65,7 +65,7 @@ function projectGallery() {
   return (
     <div>
       <NavBar />
-      <div className="w-[50vw] h-[80%] flex justify-center items-center flex-wrap relative overflow-auto">
+      <div className="w-[70vw] h-[80vh] flex justify-center items-start flex-wrap overflow-auto">
         {projects.length > 0 ? (
           projects.map((proj) => (
             <div
@@ -87,7 +87,7 @@ function projectGallery() {
                 <div className="font-bold text-white mt-3">{proj.name}</div>
               </div>
               {proj.project_id == toDel && (
-                <LoadingOverlay loading={true} massege={`Deleting Project: ${proj.name}`} />
+                <LoadingOverlay loading={isLoading} massege={`Deleting Project: ${proj.name}`} />
               )}
             </div>
           ))
