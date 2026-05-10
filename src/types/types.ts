@@ -86,6 +86,13 @@ export type AlgorithmInputs = {
   cost: number;
 };
 
+export type ScanInputs  = {
+  "network": string;
+  "start_ip": string;
+  "userName": string;
+  "password": string;
+}
+
 export type CreateNodesResponse = {
   nodes: Device[];
   links: Link[];

@@ -14,6 +14,7 @@ import SmartNetworkTopology from "@/componnents/HomePage/smartNetworkCreator.tsx
 import NavBar from "@/componnents/NavBar/NavBar";
 import { UserContext } from "@/context/UserContext";
 import { useCreatProject } from "@/hooks/useCreatProject";
+import SmartScan from "@/componnents/HomePage/netWorkScanner"
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -27,6 +28,7 @@ function homePage() {
   const [popUp, setPopUp] = useState(false);
   const userLocal = JSON.parse(localStorage.getItem("user") || "null");
   const { user, setUser } = useContext(UserContext);
+  const [popUpScan , setPopUpScan] = useState(false);
   const { mutateAsync: createProject, isPending: isPendingProject } = useCreatProject();
 
   useEffect(() => {
@@ -246,6 +248,12 @@ function homePage() {
               <img src={AI} className="w-[15%] mr-2" />
               <button className="font-bold">Create With AI</button>
             </div>
+            <div
+              className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"
+              onClick={() => setPopUpScan(true)}
+            >
+              <button className="font-bold">Scan My Network</button>
+            </div>
             <div className="flex justify-start w-[6%]">
               <div
                 className="flex flex-col items-center justify-center w-[70%] h-fit  border border-transparent
@@ -301,6 +309,13 @@ function homePage() {
             setPopUp={setPopUp}
             setCanvasComponents={setCanvasComponents}
             setConnections={setConnections}
+          />
+        )}
+        {popUpScan && (
+          <SmartScan 
+          setPopUp={setPopUpScan}
+          setCanvasComponents={setCanvasComponents}
+          setConnections={setConnections}
           />
         )}
       </div>
