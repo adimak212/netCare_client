@@ -10,6 +10,10 @@ import toast from "react-hot-toast";
 import type { Device } from "@/classes/Device.js";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/UserContext";
+import UserIntentForm from "./userIntent";
+import { PRIORITY, type Priority, type UserIntent } from "../../types/intent";
+import { IntentWeightMapper } from "@/classes/IntentWeightMapper";
+
 type Props = {
   setPopUp: React.Dispatch<React.SetStateAction<boolean>>;
   setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>;
@@ -21,6 +25,10 @@ const reqToKey: Record<(typeof Requirements)[number], keyof AlgorithmInputs> = {
   Redundancy: "redundancy",
   Cost: "cost",
 };
+interface NetworkRequirements {
+  pcs: number;
+}
+
 export default function smartNetworkTopology({ setPopUp }: Props) {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
@@ -34,28 +42,23 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
     isPending: isPendingNodes,
   } = useCreateNodes();
   const { mutateAsync: createProject, isPending: isPendingProject } = useCreatProject();
-
-  const [inputs, setInputs] = useState<AlgorithmInputs>({
-    pcs: 0,
-    scalability: 0,
-    redundancy: 0,
-    cost: 0,
-  });
   const userLocal = JSON.parse(localStorage.getItem("user") || "null");
   const { user, setUser } = useContext(UserContext);
+  const [requirements, setRequirements] = useState<NetworkRequirements>({
+    pcs: 0,
+  });
+  const [intent, setIntent] = useState<UserIntent>({
+    scalability: PRIORITY.HIGH,
+    redundancy: PRIORITY.MEDIUM,
+    cost: PRIORITY.MEDIUM,
+  });
 
-  const setField = (key: keyof AlgorithmInputs, value: number) => {
-    setInputs((prev) => ({ ...prev, [key]: value }));
-  };
   const generteTopology = async () => {
-    const { pcs, scalability, redundancy, cost } = inputs;
-    if (
-      inputs.pcs > 100 ||
-      inputs.scalability > 100 ||
-      inputs.redundancy > 100 ||
-      inputs.cost > 100
-    )
-      return;
+    const scalability = IntentWeightMapper.priorityToWeight(intent.scalability);
+    const redundancy = IntentWeightMapper.priorityToWeight(intent.redundancy);
+    const cost = IntentWeightMapper.priorityToWeight(intent.cost);
+    console.log(scalability + " | " + redundancy + " | " + cost);
+    const { pcs } = requirements;
     const result = await mutateAsync({ pcs, scalability, redundancy, cost });
     setPage(1);
     console.log(result.ranks);
@@ -74,7 +77,7 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
         canvasComponents: canvasComponents,
         connections: connections,
         ProjectName: ProjectName,
-        owner_id: (userLocal) ? userLocal._id: user?._id
+        owner_id: userLocal ? userLocal._id : user?._id,
       });
       console.log(result);
       setPopUp(false);
@@ -115,36 +118,14 @@ export default function smartNetworkTopology({ setPopUp }: Props) {
           <>
             <div className="flex flex-col justify-center items-center h-[80%]">
               <div className="font-extrabold text-xl mb-3">Smart network Generator</div>
-              {Requirements.map((req) => {
-                const key = reqToKey[req];
-                const inpValue = inputs[key];
-                return (
-                  <div key={req} className="pt-3 flex justify-between w-[55%]">
-                    <span className="mr-3 text-lg font-bold">{req}: </span>
-
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={3}
-                      pattern="[0-9]*"
-                      value={inpValue}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9]/g, "");
-                        if (raw === "") {
-                          setField(key, 0);
-                          return;
-                        }
-                        const n = Number(raw);
-                        if (n >= 0 && n <= 100) setField(key, n);
-                      }}
-                      className="text-center text-black w-12 rounded mr-5"
-                    />
-                  </div>
-                );
-              })}
-              <div className="font-bold mt-3"> All Parameters Must Be Between 0 - 100</div>
+              <UserIntentForm
+                requirements={requirements}
+                intent={intent}
+                setIntent={setIntent}
+                setRequirements={setRequirements}
+              />
               <button
-                className="bg-primary rounded-md w-[70%] h-[10%] mt-5 font-bold"
+                className="bg-primary rounded-md w-[70%] h-[12%] mt-5 font-bold"
                 onClick={() => generteTopology()}
               >
                 Generte Topology Ranks
