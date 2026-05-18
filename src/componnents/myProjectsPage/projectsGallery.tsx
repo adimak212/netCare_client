@@ -65,7 +65,7 @@ function projectGallery() {
   return (
     <div>
       <NavBar />
-      <div className="w-[70vw] h-[80vh] flex justify-center items-start flex-wrap overflow-auto">
+      <div className="w-[70vw] h-[80vh] flex justify-center items-center flex-wrap overflow-auto ">
         {projects.length > 0 ? (
           projects.map((proj) => (
             <div

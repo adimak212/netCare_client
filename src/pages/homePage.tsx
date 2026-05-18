@@ -14,7 +14,7 @@ import SmartNetworkTopology from "@/componnents/HomePage/smartNetworkCreator.tsx
 import NavBar from "@/componnents/NavBar/NavBar";
 import { UserContext } from "@/context/UserContext";
 import { useCreatProject } from "@/hooks/useCreatProject";
-import SmartScan from "@/componnents/HomePage/netWorkScanner"
+import SmartScan from "@/componnents/HomePage/netWorkScanner";
 
 function homePage() {
   const [canvasComponents, setCanvasComponents] = useState<Device[]>([]);
@@ -28,8 +28,9 @@ function homePage() {
   const [popUp, setPopUp] = useState(false);
   const userLocal = JSON.parse(localStorage.getItem("user") || "null");
   const { user, setUser } = useContext(UserContext);
-  const [popUpScan , setPopUpScan] = useState(false);
+  const [popUpScan, setPopUpScan] = useState(false);
   const { mutateAsync: createProject, isPending: isPendingProject } = useCreatProject();
+  const [errors, setErrors] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -44,7 +45,7 @@ function homePage() {
           "http://localhost:3000/v1/projects/getProjectNodes",
           { params: { id } },
         );
-        
+
         const links = await axios.get<Link[]>("http://localhost:3000/v1/projects/getProjectLinks", {
           params: { id },
         });
@@ -167,7 +168,9 @@ function homePage() {
       });
       setCanvasComponents([]);
       setProjectName("");
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error.response.data.error);
+      setErrors(error.response.data.error);
       toast.error("project didnt created!", {
         duration: 1500,
         style: {
@@ -175,6 +178,9 @@ function homePage() {
           color: "white",
         },
       });
+      setTimeout(() => {
+        setErrors("")
+      }, 5000);
       console.log(error);
     }
   }
@@ -284,7 +290,7 @@ function homePage() {
             setIsConnecting={setIsConnecting}
             setConnections={setConnections}
             connections={connections}
-            isProjectRunning = {isProjectRunning}
+            isProjectRunning={isProjectRunning}
           />
           <div className="flex justify-around w-full ">
             {!id && (
@@ -303,19 +309,24 @@ function homePage() {
               {inProjectMassege}
             </button>
           </div>
+          <div className={`flex justify-start items-center w-[90%] h-[5%] text-red-700 text-sm`}>
+            <div>{errors}</div>
+          </div>
         </div>
         {popUp && (
           <SmartNetworkTopology
             setPopUp={setPopUp}
             setCanvasComponents={setCanvasComponents}
             setConnections={setConnections}
+            errors={errors}
+            setErrors={setErrors}
           />
         )}
         {popUpScan && (
-          <SmartScan 
-          setPopUp={setPopUpScan}
-          setCanvasComponents={setCanvasComponents}
-          setConnections={setConnections}
+          <SmartScan
+            setPopUp={setPopUpScan}
+            setCanvasComponents={setCanvasComponents}
+            setConnections={setConnections}
           />
         )}
       </div>

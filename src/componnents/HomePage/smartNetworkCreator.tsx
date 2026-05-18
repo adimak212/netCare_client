@@ -18,6 +18,8 @@ type Props = {
   setPopUp: React.Dispatch<React.SetStateAction<boolean>>;
   setCanvasComponents: React.Dispatch<React.SetStateAction<Device[]>>;
   setConnections: React.Dispatch<SetStateAction<Link[] | undefined>>;
+  setErrors : React.Dispatch<SetStateAction<string>>;
+  errors: string;
 };
 const reqToKey: Record<(typeof Requirements)[number], keyof AlgorithmInputs> = {
   Pcs: "pcs",
@@ -29,12 +31,11 @@ interface NetworkRequirements {
   pcs: number;
 }
 
-export default function smartNetworkTopology({ setPopUp }: Props) {
+export default function smartNetworkTopology({ setPopUp , errors , setErrors }: Props) {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [ProjectName, setProjectName] = useState("");
   const [topoPick, setTopoPick] = useState<Rank | null>();
-  const [errors, setErrors] = useState("");
   const { mutateAsync, data } = useRunAlgorithm();
   const {
     mutateAsync: createNodesMutate,
