@@ -248,11 +248,11 @@ function homePage() {
         <div className="flex-1 flex flex-col items-center">
           <div className="flex w-full h-24 items-center">
             <div
-              className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"
+              className="flex bg-primary rounded-md w-[20%] h-[50%] items-center justify-center mr-3 cursor-pointer"
               onClick={() => setPopUp(true)}
             >
               <img src={AI} className="w-[15%] mr-2" />
-              <button className="font-bold">Create With AI</button>
+              <button className="font-bold">Generate Topology</button>
             </div>
             <div
               className="flex bg-primary rounded-md w-[15%] h-[50%] items-center justify-center mr-3 cursor-pointer"

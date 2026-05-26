@@ -7,19 +7,19 @@ export class IntentWeightMapper {
         return 0;
 
       case PRIORITY.LOW:
-        return 2;
+        return 25;
 
       case PRIORITY.MEDIUM:
-        return 5;
+        return 50;
 
       case PRIORITY.HIGH:
-        return 8;
+        return 75;
 
       case PRIORITY.CRITICAL:
-        return 10;
+        return 100;
 
       default:
-        return 1;
+        return 30;
     }
   }
 

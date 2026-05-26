@@ -305,7 +305,7 @@ export default function Canvas({
               height={500}
               onClose={() => setConsoleGNS("")}
             >
-              <Gns3Console host="100.71.52.17" port={comp.console!} />
+              <Gns3Console host={comp.host!} port={comp.console!} />
             </DraggableWindow>
           ) : null}
           <img

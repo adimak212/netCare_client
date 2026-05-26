@@ -21,6 +21,7 @@ class Device {
   template_id?: string;
   status: string = "stopped";
   console?: number;
+  host?: string;
   slot1?: string;
 }
 
@@ -44,7 +45,7 @@ class PC extends Device {
     ];
     this.name = "PC";
     this.template_id = "19021f99-e36f-394d-b4a1-8aaa902ab9cc";
-    this.slot1=""
+    this.slot1 = "";
   }
 }
 
@@ -99,7 +100,7 @@ class Router extends Device {
     this.ports = ports;
     this.name = "Router";
     this.template_id = "f5f30ee0-8e87-4cbf-8682-17e5aae51685";
-    this.slot1=""
+    this.slot1 = "";
   }
 }
 
@@ -123,7 +124,7 @@ class Cloud extends Device {
     this.icon = cloudIcon;
     this.name = "Cloud";
     this.template_id = "39e257dc-8412-3174-b6b3-0ee3ed6a43e9";
-    this.slot1=""
+    this.slot1 = "";
   }
 }
 
